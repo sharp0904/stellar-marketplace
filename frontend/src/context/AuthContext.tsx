@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [roles, setRoles] = useState<string[]>([]);
   const [currentRole, setCurrentRole] = useState<string>("client");
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   
   // ✅ Load stored auth state on mount
   useEffect(() => {
@@ -64,6 +64,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log("✅ Parsed Response:", data);
 
       if (!data.token || !data.userId || !data.roles) {
+        if(!data.token) throw new Error("no token")
+        if(!data.userId) throw new Error("no userId")
+        if(!data.roles) throw new Error("no roles")
         throw new Error("❌ Invalid login response: Missing token, userId, or roles.");
       }
 
