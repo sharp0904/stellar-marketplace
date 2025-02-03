@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentRole, setCurrentRole] = useState<string>("client");
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
-
+  
   // ✅ Load stored auth state on mount
   useEffect(() => {
     console.log("🔹 Checking stored authentication state...");

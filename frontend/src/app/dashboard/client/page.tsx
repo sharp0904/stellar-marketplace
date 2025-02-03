@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-regular-svg-icons"; 
 
 interface Job {
   _id: string;
@@ -207,18 +209,26 @@ const ClientDashboard = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">Client Dashboard</h1>
+      <div className="flex justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Client Dashboard</h1>
+        </div>
+        {/* Profile Avatar */}
+        <div className="">
+          <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
+        </div>
+      </div>
       <p>Post jobs, manage applications, and message developers.</p>
 
       {/* ✅ Job Posting Form */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold">Post a New Job</h2>
         <form onSubmit={handleJobPost} className="space-y-4 mt-4">
-          <input type="text" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <textarea placeholder="Job Description" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <input type="number" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
-          <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
-          <button type="submit">Post Job</button>
+          <input type="text" className="w-full" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <textarea placeholder="Job Description" className="w-full" value={description} onChange={(e) => setDescription(e.target.value)} required />
+          <input type="number" className="w-full" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
+          <input type="date" className="w-full" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+          <button type="submit" className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Post Job</button>
         </form>
       </div>
 
