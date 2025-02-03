@@ -1,0 +1,258 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+
+interface Job {
+  _id: string;
+  title: string;
+  description: string;
+  budget: number;
+  applicants: Applicant[];
+  client: string;
+}
+
+interface Applicant {
+  _id?: string;
+  name: string;
+  email: string;
+}
+
+interface Message {
+  _id: string;
+  sender: string;
+  receiver: string;
+  message: string;
+  timestamp: string;
+}
+
+const ClientDashboard = () => {
+  const { token, user } = useAuth();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [budget, setBudget] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  const API_URL = "http://localhost:5001/api/jobs";
+  const MESSAGE_API = "http://localhost:5001/api/messages";
+
+  // ✅ Fetch Client's Jobs
+  const fetchJobs = async () => {
+    if (!token || !user) return;
+
+    try {
+      const res = await fetch(API_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        console.error("❌ Error fetching jobs:", await res.text());
+        throw new Error("Failed to fetch jobs.");
+      }
+
+      const data: Job[] = await res.json();
+      const clientJobs = data.filter((job) => job.client?.toString() === user?.toString());
+      setJobs(clientJobs);
+    } catch (err) {
+      console.error("❌ Error fetching jobs:", err);
+      setError("Error fetching jobs.");
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [token, user]);
+
+  // ✅ Handle Job Posting (Fixed)
+  const handleJobPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!token) {
+      setError("Unauthorized: No token provided.");
+      return;
+    }
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          budget: Number(budget),
+          deadline,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to post job.");
+
+      setSuccess("Job posted successfully!");
+      setTitle("");
+      setDescription("");
+      setBudget("");
+      setDeadline("");
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error posting job:", err);
+      setError((err as Error).message);
+    }
+  };
+
+  // ✅ Accept an Applicant
+  const acceptApplicant = async (jobId: string, applicantId?: string) => {
+    if (!applicantId) {
+      setError("Error: Applicant ID is missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/accept/${jobId}/${applicantId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to accept applicant.");
+
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error accepting applicant:", err);
+      setError("Error accepting applicant.");
+    }
+  };
+
+  // ✅ Reject an Applicant
+  const rejectApplicant = async (jobId: string, applicantId?: string) => {
+    if (!applicantId) {
+      setError("Error: Applicant ID is missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/reject/${jobId}/${applicantId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to reject applicant.");
+
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error rejecting applicant:", err);
+      setError("Error rejecting applicant.");
+    }
+  };
+
+  // ✅ Open Chat
+  const openChat = (applicantId: string, jobId: string) => {
+    setActiveChat(applicantId);
+    setSelectedJobId(jobId);
+    fetchMessages(applicantId, jobId);
+  };
+
+  // ✅ Fetch Messages
+  const fetchMessages = async (receiverId: string, jobId: string) => {
+    if (!token || !user || !receiverId || !jobId) return;
+
+    try {
+      const res = await fetch(`${MESSAGE_API}/${jobId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch messages.");
+
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error("❌ Error fetching messages:", err);
+    }
+  };
+
+  // ✅ Send Message
+  const sendMessage = async () => {
+    if (!token || !user || !activeChat || !newMessage.trim() || !selectedJobId) return;
+
+    try {
+      const res = await fetch(`${MESSAGE_API}/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          jobId: selectedJobId,
+          receiverId: activeChat,
+          message: newMessage,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to send message.");
+
+      setNewMessage("");
+      fetchMessages(activeChat, selectedJobId);
+    } catch (err) {
+      console.error("❌ Error sending message:", err);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Client Dashboard</h1>
+      <p>Post jobs, manage applications, and message developers.</p>
+
+      {/* ✅ Job Posting Form */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Post a New Job</h2>
+        <form onSubmit={handleJobPost} className="space-y-4 mt-4">
+          <input type="text" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <textarea placeholder="Job Description" value={description} onChange={(e) => setDescription(e.target.value)} required />
+          <input type="number" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
+          <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+          <button type="submit">Post Job</button>
+        </form>
+      </div>
+
+      {/* ✅ Job Listings */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Your Jobs</h2>
+        {jobs.map((job) => (
+          <div key={job._id} className="border p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold">{job.title}</h3>
+            {job.applicants.map((applicant) => (
+              <div key={applicant._id} className="flex justify-between items-center border-b py-2">
+                <span>{applicant.name} ({applicant.email})</span>
+                <div>
+                  <button onClick={() => acceptApplicant(job._id, applicant._id)}>Accept</button>
+                  <button onClick={() => rejectApplicant(job._id, applicant._id)}>Reject</button>
+                  <button onClick={() => openChat(applicant._id ?? "", job._id)}>Message</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* ✅ Chat UI */}
+      {activeChat && (
+        <div className="fixed bottom-4 right-4 w-80 bg-white p-4 border shadow-lg rounded-lg">
+          <h3>Chat</h3>
+          <div>{messages.map((msg) => (<p key={msg._id}>{msg.message}</p>))}</div>
+          <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+          <button onClick={sendMessage}>Send</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ClientDashboard;
