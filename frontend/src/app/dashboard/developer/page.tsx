@@ -11,8 +11,8 @@ const DeveloperDashboard = () => {
   const [messages, setMessages] = useState<{ sender: string; message: string }[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const API_URL = "http://localhost:5001/api/jobs";
-  const MESSAGE_API_URL = "http://localhost:5001/api/messages";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+  const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
   // ✅ Fetch Jobs the Developer Has Applied To
   const fetchAppliedJobs = async () => {
@@ -148,96 +148,98 @@ const DeveloperDashboard = () => {
   }, [token]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Developer Dashboard</h1>
-      <p>Find jobs, submit applications, and chat with clients.</p>
+    <div className="flex justify-center">
+      <div className="p-6">
+        <h1 className="text-2xl font-bold">Developer Dashboard</h1>
+        <p>Find jobs, submit applications, and chat with clients.</p>
 
-      {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
-      {/* ✅ Available Jobs */}
-      <h2 className="text-xl font-semibold mt-6">Available Jobs</h2>
-      {availableJobs.length > 0 ? (
-        <div className="grid gap-4 mt-4">
-          {availableJobs.map((job) => (
-            <div key={job._id} className="border p-4 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold">{job.title}</h3>
-              <p className="text-gray-600">{job.description}</p>
-              <button
-                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                onClick={() => applyForJob(job._id)}
-                disabled={appliedJobs.some((appliedJob) => appliedJob._id === job._id)}
-              >
-                {appliedJobs.some((appliedJob) => appliedJob._id === job._id)
-                  ? "Already Applied"
-                  : "Apply Now"}
-              </button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No available jobs.</p>
-      )}
+        {/* ✅ Available Jobs */}
+        <h2 className="text-xl font-semibold mt-6">Available Jobs</h2>
+        {availableJobs.length > 0 ? (
+          <div className="grid gap-4 mt-4">
+            {availableJobs.map((job) => (
+              <div key={job._id} className="border p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold">{job.title}</h3>
+                <p className="text-gray-600">{job.description}</p>
+                <button
+                  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  onClick={() => applyForJob(job._id)}
+                  disabled={appliedJobs.some((appliedJob) => appliedJob._id === job._id)}
+                >
+                  {appliedJobs.some((appliedJob) => appliedJob._id === job._id)
+                    ? "Already Applied"
+                    : "Apply Now"}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No available jobs.</p>
+        )}
 
-      {/* ✅ Applied Jobs with Messaging */}
-      <h2 className="text-xl font-semibold mt-6">Applied Jobs</h2>
-      {appliedJobs.length > 0 ? (
-        <div className="grid gap-4 mt-4">
-          {appliedJobs.map((job) => (
-            <div key={job._id} className="border p-4 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold">{job.title}</h3>
-              <p className="text-gray-600">{job.description}</p>
-              <button
-                className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
-                onClick={() => {
-                  setActiveChat(job._id);
-                  fetchMessages(job._id);
-                }}
-              >
-                Chat with Client
-              </button>
+        {/* ✅ Applied Jobs with Messaging */}
+        <h2 className="text-xl font-semibold mt-6">Applied Jobs</h2>
+        {appliedJobs.length > 0 ? (
+          <div className="grid gap-4 mt-4">
+            {appliedJobs.map((job) => (
+              <div key={job._id} className="border p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold">{job.title}</h3>
+                <p className="text-gray-600">{job.description}</p>
+                <button
+                  className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
+                  onClick={() => {
+                    setActiveChat(job._id);
+                    fetchMessages(job._id);
+                  }}
+                >
+                  Chat with Client
+                </button>
 
-              {/* ✅ Chat UI */}
-              {activeChat === job._id && (
-                <div className="mt-4 p-4 border rounded-lg bg-gray-100">
-                  <h3 className="text-md font-semibold">Chat with Client</h3>
-                  <div className="h-40 overflow-y-auto border p-2 bg-white rounded-md">
-                    {messages.length > 0 ? (
-                      messages.map((msg, index) => (
-                        <div key={index} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
-                          <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
-                            {msg.message}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">No messages yet.</p>
-                    )}
+                {/* ✅ Chat UI */}
+                {activeChat === job._id && (
+                  <div className="mt-4 p-4 border rounded-lg bg-gray-100">
+                    <h3 className="text-md font-semibold">Chat with Client</h3>
+                    <div className="h-40 overflow-y-auto border p-2 bg-white rounded-md">
+                      {messages.length > 0 ? (
+                        messages.map((msg, index) => (
+                          <div key={index} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
+                            <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
+                              {msg.message}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500">No messages yet.</p>
+                      )}
+                    </div>
+
+                    {/* ✅ Send Message */}
+                    <div className="mt-2 flex">
+                      <input
+                        type="text"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        className="flex-1 p-2 border rounded"
+                        placeholder="Type a message..."
+                      />
+                      <button
+                        className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
+                        onClick={() => sendMessage(job._id, job.client)}
+                      >
+                        Send
+                      </button>
+                    </div>
                   </div>
-
-                  {/* ✅ Send Message */}
-                  <div className="mt-2 flex">
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1 p-2 border rounded"
-                      placeholder="Type a message..."
-                    />
-                    <button
-                      className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
-                      onClick={() => sendMessage(job._id, job.client)}
-                    >
-                      Send
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No applied jobs.</p>
-      )}
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No applied jobs.</p>
+        )}
+      </div>
     </div>
   );
 };

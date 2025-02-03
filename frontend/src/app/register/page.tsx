@@ -16,7 +16,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // ✅ Loading state
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const REGISTER_API = API_URL + '/api/auth/register';
 
   const handleRegister = async (e: React.FormEvent) => {

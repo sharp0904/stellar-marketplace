@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-regular-svg-icons"; 
+import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { useRouter } from "next/navigation";
 
 interface Job {
   _id: string;
@@ -41,8 +42,10 @@ const ClientDashboard = () => {
   const [newMessage, setNewMessage] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  const API_URL = "http://localhost:5001/api/jobs";
-  const MESSAGE_API = "http://localhost:5001/api/messages";
+  const router = useRouter();
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+  const MESSAGE_API = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
   // ✅ Fetch Client's Jobs
   const fetchJobs = async () => {
@@ -190,7 +193,8 @@ const ClientDashboard = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` },
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           jobId: selectedJobId,
           receiverId: activeChat,
@@ -207,60 +211,66 @@ const ClientDashboard = () => {
     }
   };
 
+  const moveToProfile = () => {
+    router.push("/profile")
+  }
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Client Dashboard</h1>
-        </div>
-        {/* Profile Avatar */}
-        <div className="">
-          <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
-        </div>
-      </div>
-      <p>Post jobs, manage applications, and message developers.</p>
-
-      {/* ✅ Job Posting Form */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Post a New Job</h2>
-        <form onSubmit={handleJobPost} className="space-y-4 mt-4">
-          <input type="text" className="w-full" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <textarea placeholder="Job Description" className="w-full" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <input type="number" className="w-full" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
-          <input type="date" className="w-full" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
-          <button type="submit" className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Post Job</button>
-        </form>
-      </div>
-
-      {/* ✅ Job Listings */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Your Jobs</h2>
-        {jobs.map((job) => (
-          <div key={job._id} className="border p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold">{job.title}</h3>
-            {job.applicants.map((applicant) => (
-              <div key={applicant._id} className="flex justify-between items-center border-b py-2">
-                <span>{applicant.name} ({applicant.email})</span>
-                <div>
-                  <button onClick={() => acceptApplicant(job._id, applicant._id)}>Accept</button>
-                  <button onClick={() => rejectApplicant(job._id, applicant._id)}>Reject</button>
-                  <button onClick={() => openChat(applicant._id ?? "", job._id)}>Message</button>
-                </div>
-              </div>
-            ))}
+    <div className="flex justify-center">
+      <div className="p-6">
+        <div className="flex justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Client Dashboard</h1>
           </div>
-        ))}
-      </div>
-
-      {/* ✅ Chat UI */}
-      {activeChat && (
-        <div className="fixed bottom-4 right-4 w-80 bg-white p-4 border shadow-lg rounded-lg">
-          <h3>Chat</h3>
-          <div>{messages.map((msg) => (<p key={msg._id}>{msg.message}</p>))}</div>
-          <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
-          <button onClick={sendMessage}>Send</button>
+          {/* Profile Avatar */}
+          <div className="cursor-pointer">
+            <FontAwesomeIcon icon={faUser} className="text-white text-2xl" onClick={() => moveToProfile()} />
+          </div>
         </div>
-      )}
+        <p>Post jobs, manage applications, and message developers.</p>
+
+        {/* ✅ Job Posting Form */}
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold">Post a New Job</h2>
+          <form onSubmit={handleJobPost} className="space-y-4 mt-4">
+            <input type="text" className="w-full" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <textarea placeholder="Job Description" className="w-full" value={description} onChange={(e) => setDescription(e.target.value)} required />
+            <input type="number" className="w-full" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
+            <input type="date" className="w-full" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+            <button type="submit" className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Post Job</button>
+          </form>
+        </div>
+
+        {/* ✅ Job Listings */}
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold">Your Jobs</h2>
+          {jobs.map((job) => (
+            <div key={job._id} className="border p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold">{job.title}</h3>
+              {job.applicants.map((applicant) => (
+                <div key={applicant._id} className="flex justify-between items-center border-b py-2">
+                  <span>{applicant.name} ({applicant.email})</span>
+                  <div>
+                    <button onClick={() => acceptApplicant(job._id, applicant._id)}>Accept</button>
+                    <button onClick={() => rejectApplicant(job._id, applicant._id)}>Reject</button>
+                    <button onClick={() => openChat(applicant._id ?? "", job._id)}>Message</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ Chat UI */}
+        {activeChat && (
+          <div className="fixed bottom-4 right-4 w-80 bg-white p-4 border shadow-lg rounded-lg">
+            <h3>Chat</h3>
+            <div>{messages.map((msg) => (<p key={msg._id}>{msg.message}</p>))}</div>
+            <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+            <button onClick={sendMessage}>Send</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
