@@ -81,7 +81,6 @@ const ProfilePage = () => {
 
   // Handle profile update
   const handleUpdateProfile = async () => {
-    
     await updateUser()
   };
 
