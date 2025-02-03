@@ -6,29 +6,57 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
-  const { register } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [roles, setRoles] = useState<string[]>([]);
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // ✅ Loading state
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  const REGISTER_API = API_URL + '/api/auth/register';
+
   const handleRegister = async (e: React.FormEvent) => {
+    setRoles(['developer'])
     e.preventDefault();
     setError("");
     setLoading(true); // ✅ Disable button during login
 
     try {
-      await register(name, email, password, walletAddress);
-      router.push("/dashboard"); // ✅ Redirect user to Dashboard after login
+      const res = await fetch(REGISTER_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          roles,
+          walletAddress,
+        })
+      })
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to register.");
+      router.push("/dashboard"); 
     } catch (err: any) {
-      setError(err.message || "Invalid email or password. Please try again.");
+      setError(err.message || "Failed to register.");
     } finally {
-      setLoading(false); // ✅ Re-enable button after request
+      setLoading(false); 
     }
+
+    // try {
+    //   await register(name, email, password, walletAddress);
+    //   router.push("/dashboard"); // ✅ Redirect user to Dashboard after login
+    // } catch (err: any) {
+    //   setError(err.message || "Invalid email or password. Please try again.");
+    // } finally {
+    //   setLoading(false); // ✅ Re-enable button after request
+    // }
   };
 
   return (

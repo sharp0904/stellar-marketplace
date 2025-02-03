@@ -7,7 +7,6 @@ interface AuthContextType {
   roles: string[];
   currentRole: string;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, walletAddress: string) => Promise<void>;
   logout: () => void;
   switchRole: (newRole: string) => void;
 }
@@ -21,7 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentRole, setCurrentRole] = useState<string>("client");
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
-
+  
   // ✅ Load stored auth state on mount
   useEffect(() => {
     console.log("🔹 Checking stored authentication state...");
@@ -87,35 +86,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // ✅ Register function
-  const register = async (name: string, email: string, password: string, walletAddress: string) => {
-    try {
-      console.log(`🔹 Attempting register at: ${API_URL}/api/auth/register`);
-      
-      setRoles(['developer']);
-
-      const res = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, walletAddress, roles }),
-      });
-
-      const rawResponse = await res.text();
-      console.log("🔹 Token:", rawResponse);
-
-      if (!res.ok) {
-        throw new Error(`Login failed: ${res.status} ${res.statusText}`);
-      }
-
-      const data = JSON.parse(rawResponse);
-      console.log("✅ Parsed Response:", data);
-
-    } catch (error) {
-      console.error("❌ Login error:", (error as Error).message);
-      throw error;
-    }
-  };
-
   // ✅ Logout function
   const logout = () => {
     console.log("🔹 Logging out...");
@@ -145,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, roles, currentRole, login, register, logout, switchRole }}>
+    <AuthContext.Provider value={{ user, token, roles, currentRole, login, logout, switchRole }}>
       {children}
     </AuthContext.Provider>
   );
