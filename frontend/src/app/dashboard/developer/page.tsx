@@ -149,7 +149,7 @@ const DeveloperDashboard = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">Developer Dashboard {user}</h1>
+      <h1 className="text-2xl font-bold">Developer Dashboard</h1>
       <p>Find jobs, submit applications, and chat with clients.</p>
 
       {error && <p className="text-red-500">{error}</p>}
