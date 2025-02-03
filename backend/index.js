@@ -28,9 +28,9 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
 app.use("/api/jobs", require("./routes/job"));
 app.use("/api/wallet", require("./routes/wallet"));
-app.use("/api/messages", require("./routes/message")); 
-app.use("/api/escrow", require("./routes/escrow")); 
-app.use("/api/payments", require("./routes/payments")); // ✅ Added payments Routes
+app.use("/api/messages", require("./routes/message"));
+app.use("/api/escrow", require("./routes/escrow"));
+app.use("/api/payments", require("./routes/payments"));
 
 // Default Route
 app.get("/", (req, res) => {

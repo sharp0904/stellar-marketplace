@@ -1,14 +1,12 @@
 const express = require("express");
-const auth = require("../middleware/auth"); // Import authentication middleware
-const User = require("../models/User"); // Import User model
-const StellarSdk = require("stellar-sdk"); // Import Stellar SDK
+const auth = require("../middleware/auth");
+const User = require("../models/User");
+const StellarSdk = require("stellar-sdk");
 
 const router = express.Router();
 
-// 🔹 Set `USE_TESTNET` to `true` for Testnet, `false` for Mainnet
 const USE_TESTNET = true;
 
-// 🔹 Dynamically set Horizon server & network
 const server = new StellarSdk.Horizon.Server(
   USE_TESTNET ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
 );
@@ -72,7 +70,7 @@ router.post("/send", auth, async (req, res) => {
     // Fetch sender's balance
     const account = await server.loadAccount(user.walletAddress);
     const balance = account.balances.find(b => b.asset_type === "native");
-    
+
     if (!balance || parseFloat(balance.balance) < parseFloat(amount)) {
       return res.status(400).json({ msg: "Insufficient XLM balance" });
     }
@@ -98,7 +96,7 @@ router.post("/send", auth, async (req, res) => {
 
     // Submit transaction
     const transactionResult = await server.submitTransaction(transaction);
-    
+
     res.json({
       msg: "Payment sent successfully",
       transactionHash: transactionResult.hash
