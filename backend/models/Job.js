@@ -8,10 +8,10 @@ const JobSchema = new mongoose.Schema({
   applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // ✅ Developers who applied (Stored as ObjectId)
   selectedDeveloper: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // ✅ Developer hired
 
-  status: { 
-    type: String, 
-    enum: ["open", "in progress", "completed"], 
-    default: "open" 
+  status: {
+    type: String,
+    enum: ["open", "in progress", "completed"],
+    default: "open"
   }, // ✅ Job status
 
   deadline: { type: Date, required: true }, // ✅ Job deadline
@@ -24,7 +24,7 @@ const JobSchema = new mongoose.Schema({
 // ✅ Ensure applicants field always stores ObjectIds correctly
 JobSchema.pre("save", function (next) {
   if (this.applicants && this.applicants.length > 0) {
-    this.applicants = this.applicants.map((applicant) => 
+    this.applicants = this.applicants.map((applicant) =>
       new mongoose.Types.ObjectId(applicant)
     );
   }

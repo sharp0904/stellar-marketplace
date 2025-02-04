@@ -5,11 +5,11 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   roles: {
-    type: [String], // ✅ Allow multiple roles
+    type: [String],
     enum: ["client", "developer"],
-    default: [], // ✅ User selects roles during registration
+    default: [],
   },
-  walletAddress: { type: String, default: "" }, // Stellar Wallet Address
+  walletAddress: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now }
 });
 
