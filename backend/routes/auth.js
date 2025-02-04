@@ -15,6 +15,7 @@ router.post(
     check("name", "Name is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
     check("password", "Password must be at least 6 characters").isLength({ min: 6 }),
+    check("walletAddress", "Name is required").not().isEmpty(),
     check("roles", "Roles must be an array containing 'client' or 'developer'")
       .isArray()
       .custom((roles) => roles.every((role) => ["client", "developer"].includes(role))),
@@ -25,7 +26,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let { name, email, password, roles, walletAddress } = req.body;
+    let { name, email, password, walletAddress, roles } = req.body;
     email = email.toLowerCase(); // ✅ Ensure email is always stored in lowercase
 
     try {
@@ -129,7 +130,7 @@ router.get("/profile", auth, async (req, res) => {
 
 // 📌 Update User Profile
 router.put("/update", auth, async (req, res) => {
-  const { name, roles, walletAddress } = req.body;
+  const { name, roles, password, walletAddress } = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -141,6 +142,11 @@ router.put("/update", auth, async (req, res) => {
     if (name) user.name = name;
     if (roles) user.roles = roles;
     if (walletAddress) user.walletAddress = walletAddress;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
 
     await user.save();
     res.json(user);

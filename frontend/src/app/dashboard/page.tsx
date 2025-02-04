@@ -7,23 +7,22 @@ const Dashboard = () => {
   const { user, roles, currentRole, switchRole } = useAuth();
   const router = useRouter();
   const [redirecting, setRedirecting] = useState(true);
-
-  useEffect(() => {
+  
+    useEffect(() => {
     if (!user) {
       router.push("/login"); // Redirect to login if not authenticated
       return;
     }
-    console.log(roles)
 
     // Automatically redirect to the appropriate dashboard
-    if (currentRole == "client") {
+    if (roles.includes("client")) {
       router.push("/dashboard/client");
-    } else if (currentRole == "developer") {
+    } else if (roles.includes("developer")) {
       router.push("/dashboard/developer");
     } else {
       setRedirecting(false);
     }
-  }, [user, currentRole, router]);
+  }, [user, roles, router]);
 
   if (redirecting) {
     return <p className="text-center mt-10 text-lg font-semibold">Redirecting...</p>;

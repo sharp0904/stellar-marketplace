@@ -12,10 +12,15 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState("");
+  const [roles, setRoles] = useState<string[]>([""]);
   const [loading, setLoading] = useState(false); // ✅ Loading state
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const REGISTER_API = API_URL + '/api/auth/register';
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email);
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,16 +38,17 @@ export default function RegisterPage() {
           email,
           password,
           walletAddress,
+          roles,
         })
       })
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Failed to register.");
-      router.push("/dashboard"); 
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to register.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
 
     // try {
@@ -71,6 +77,7 @@ export default function RegisterPage() {
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+
           <input
             type="email"
             placeholder="Email"
@@ -79,6 +86,9 @@ export default function RegisterPage() {
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {email.length > 0 && !isValidEmail(email) && (
+            <p className="text-red-500 text-sm">Please enter a valid email address.</p>
+          )}
 
           <input
             type="password"
@@ -88,6 +98,9 @@ export default function RegisterPage() {
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {password.length > 0 && password.length < 6 && (
+            <p className="text-red-500 text-sm">Password must be at least 6 characters.</p>
+          )}
 
           <input
             type="text"
@@ -97,6 +110,22 @@ export default function RegisterPage() {
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700">Select Role</label>
+            <div className="flex items-center space-x-2">
+              <select
+                value={roles[0]}
+                onChange={(e) => setRoles([e.target.value])}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="">Choose Role</option>
+                <option value="developer">Developer</option>
+                <option value="client">Client</option>
+              </select>
+            </div>
+          </div>
 
           <button
             type="submit"
