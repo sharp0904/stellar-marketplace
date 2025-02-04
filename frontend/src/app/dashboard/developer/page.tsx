@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { useRouter } from "next/navigation";
 
 const DeveloperDashboard = () => {
   const { token, user } = useAuth();
@@ -13,6 +16,8 @@ const DeveloperDashboard = () => {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
+
+  const router = useRouter();
 
   // ✅ Fetch Jobs the Developer Has Applied To
   const fetchAppliedJobs = async () => {
@@ -147,10 +152,22 @@ const DeveloperDashboard = () => {
     fetchAvailableJobs();
   }, [token]);
 
+  const moveToProfile = () => {
+    router.push("/profile")
+  }
+
   return (
     <div className="flex justify-center">
       <div className="p-6">
-        <h1 className="text-2xl font-bold">Developer Dashboard</h1>
+        <div className="flex justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Developer Dashboard</h1>
+          </div>
+          {/* Profile Avatar */}
+          <div className="cursor-pointer">
+            <FontAwesomeIcon icon={faUser} className="text-white text-2xl" onClick={() => moveToProfile()} />
+          </div>
+        </div>
         <p>Find jobs, submit applications, and chat with clients.</p>
 
         {error && <p className="text-red-500">{error}</p>}
