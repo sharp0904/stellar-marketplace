@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { useRouter } from "next/navigation";
+
+import Profile from "@/app/components/profileList";
 
 interface Job {
   _id: string;
@@ -41,8 +40,6 @@ const ClientDashboard = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-
-  const router = useRouter();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
@@ -211,21 +208,12 @@ const ClientDashboard = () => {
     }
   };
 
-  const moveToProfile = () => {
-    router.push("/profile")
-  }
-
   return (
     <div className="flex justify-center">
       <div className="p-6 text-gray-600">
         <div className="flex justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Client Dashboard</h1>
-          </div>
-          {/* Profile Avatar */}
-          <div className="cursor-pointer">
-            <FontAwesomeIcon icon={faUser} className="text-white text-2xl" onClick={() => moveToProfile()} />
-          </div>
+        <h1 className="text-2xl font-bold">Client Dashboard</h1>
+          <Profile />
         </div>
         <p>Post jobs, manage applications, and message developers.</p>
 

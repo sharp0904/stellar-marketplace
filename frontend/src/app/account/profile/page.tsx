@@ -111,13 +111,6 @@ const ProfilePage = () => {
     alert("Profile updated successfuly")
   };
 
-  // Handle password change
-  // const handleChangePassword = async () => {
-  //   if (!password) return alert("Please enter a new password.");
-  //   alert("Password updated successfully!");
-  //   setPassword("");
-  // };
-
   const handleChangePassword = async () => {
     if (!password) {
       return alert("Please enter a new password.");
