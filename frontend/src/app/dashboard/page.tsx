@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const { user, roles, switchRole } = useAuth();
+  const { user, roles, currentRole, switchRole } = useAuth();
   const router = useRouter();
   const [redirecting, setRedirecting] = useState(true);
 
@@ -13,16 +13,17 @@ const Dashboard = () => {
       router.push("/login"); // Redirect to login if not authenticated
       return;
     }
+    console.log(roles)
 
     // Automatically redirect to the appropriate dashboard
-    if (roles.includes("client")) {
+    if (currentRole == "client") {
       router.push("/dashboard/client");
-    } else if (roles.includes("developer")) {
+    } else if (currentRole == "developer") {
       router.push("/dashboard/developer");
     } else {
       setRedirecting(false);
     }
-  }, [user, roles, router]);
+  }, [user, currentRole, router]);
 
   if (redirecting) {
     return <p className="text-center mt-10 text-lg font-semibold">Redirecting...</p>;

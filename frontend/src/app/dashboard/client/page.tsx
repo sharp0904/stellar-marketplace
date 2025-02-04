@@ -217,7 +217,7 @@ const ClientDashboard = () => {
 
   return (
     <div className="flex justify-center">
-      <div className="p-6">
+      <div className="p-6 text-gray-600">
         <div className="flex justify-between">
           <div>
             <h1 className="text-2xl font-bold">Client Dashboard</h1>

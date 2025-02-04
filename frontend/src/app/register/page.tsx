@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -11,7 +10,6 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [roles, setRoles] = useState<string[]>([]);
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // ✅ Loading state
@@ -20,7 +18,6 @@ export default function RegisterPage() {
   const REGISTER_API = API_URL + '/api/auth/register';
 
   const handleRegister = async (e: React.FormEvent) => {
-    setRoles(['developer'])
     e.preventDefault();
     setError("");
     setLoading(true); // ✅ Disable button during login
@@ -35,7 +32,6 @@ export default function RegisterPage() {
           name,
           email,
           password,
-          roles,
           walletAddress,
         })
       })
