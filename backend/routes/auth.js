@@ -138,8 +138,6 @@ router.put("/update", auth, async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    console.log("name>>>>>>>>>>>", req.body)
-
     if (name) user.name = name;
     if (roles) user.roles = roles;
     if (walletAddress) user.walletAddress = walletAddress;
