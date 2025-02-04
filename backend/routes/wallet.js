@@ -39,18 +39,28 @@ router.get("/balance", auth, async (req, res) => {
       return res.status(400).json({ msg: "No wallet connected" });
     }
 
-    // Fetch balance from Stellar
-    const account = await server.loadAccount(user.walletAddress);
-    const balances = account.balances.map((balance) => ({
-      asset: balance.asset_type === "native" ? "XLM" : balance.asset_code,
-      balance: balance.balance,
-    }));
+    try {
+      // Fetch balance from Stellar
+      const account = await server.loadAccount(user.walletAddress);
 
-    res.json({ walletAddress: user.walletAddress, balances });
+      // Extract balances
+      const balances = account.balances.map((balance) => ({
+        asset: balance.asset_type === "native" ? "XLM" : balance.asset_code,
+        balance: balance.balance,
+      }));
+
+      return res.json({ walletAddress: user.walletAddress, balances });
+    } catch (stellarError) {
+      if (stellarError.response && stellarError.response.status === 404) {
+        return res.status(401).json({ msg: "Invalid wallet address. The account does not exist on the Stellar network." });
+      }
+      throw stellarError; // Re-throw other unexpected errors
+    }
   } catch (err) {
     res.status(500).json({ msg: "Error retrieving wallet balance", error: err.toString() });
   }
 });
+
 
 // 📌 Send XLM Payment from One User to Another
 router.post("/send", auth, async (req, res) => {
