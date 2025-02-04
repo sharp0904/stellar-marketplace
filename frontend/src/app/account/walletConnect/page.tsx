@@ -48,7 +48,9 @@ const WalletConnect = () => {
   }, [user, token])
 
   return (
-    <div>WalletConnect</div>
+    <div>
+      WalletConnect
+    </div>
   )
 }
 
