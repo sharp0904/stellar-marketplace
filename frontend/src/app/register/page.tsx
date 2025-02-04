@@ -108,7 +108,6 @@ export default function RegisterPage() {
             value={walletAddress}
             onChange={(e) => setWalletAddress(e.target.value)}
             className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
           />
 
           <div className="relative">
