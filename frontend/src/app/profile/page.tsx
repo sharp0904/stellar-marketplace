@@ -75,6 +75,32 @@ const ProfilePage = () => {
     }
   }
 
+  const updatePassword = async () => {
+    if (!user || !token) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(UPDATE_USER_API, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          password
+        })
+      })
+      if (!res.ok) throw new Error("Faild to update profile");
+
+      setEditing(false)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     fetchUser()
   }, [user, token])
@@ -82,13 +108,24 @@ const ProfilePage = () => {
   // Handle profile update
   const handleUpdateProfile = async () => {
     await updateUser()
+    alert("Profile updated successfuly")
   };
 
   // Handle password change
+  // const handleChangePassword = async () => {
+  //   if (!password) return alert("Please enter a new password.");
+  //   alert("Password updated successfully!");
+  //   setPassword("");
+  // };
+
   const handleChangePassword = async () => {
-    if (!password) return alert("Please enter a new password.");
-    alert("Password updated successfully!");
-    setPassword("");
+    if (!password) {
+      return alert("Please enter a new password.");
+    } else {
+      await updatePassword()
+      setPassword("");
+      alert("Password updated successfuly")
+    }
   };
 
   return loading ? (
@@ -166,6 +203,9 @@ const ProfilePage = () => {
                 className="w-full bg-transparent px-3 py-2 focus:outline-none border border-gray-600"
               />
             </div>
+            {password.length > 0 && password.length < 6 && (
+              <p className="text-red-500 text-sm">Password must be at least 6 characters.</p>
+            )}
             <button
               onClick={handleChangePassword}
               className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md mt-2"
