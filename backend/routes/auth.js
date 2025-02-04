@@ -15,7 +15,6 @@ router.post(
     check("name", "Name is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
     check("password", "Password must be at least 6 characters").isLength({ min: 6 }),
-    check("walletAddress", "Name is required").not().isEmpty(),
     check("roles", "Roles must be an array containing 'client' or 'developer'")
       .isArray()
       .custom((roles) => roles.every((role) => ["client", "developer"].includes(role))),
