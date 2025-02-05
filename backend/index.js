@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
 
   // ✅ Handle Read Receipts
   socket.on("markAsRead", async ({ messageId }) => {
+    console.log(messageId)
     const Message = require("./models/Message");
 
     const message = await Message.findById(messageId);
