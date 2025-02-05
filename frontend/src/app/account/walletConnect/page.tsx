@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext"; // Example auth context
+import { useAuth } from "@/context/AuthContext";
 
 const WalletConnect = () => {
   const { user, token, currentRole, logout } = useAuth();
@@ -88,13 +88,6 @@ const WalletConnect = () => {
   };
 
   const handleWalletBalance = async () => {
-    // if (!walletAddress.trim()) {
-    //   setSuccess("");
-    //   setBalance("");
-    //   setError("Wallet address cannot be empty");
-    //   return;
-    // }
-
     setLoading(true);
     setError("");
     setSuccess("");
@@ -117,7 +110,7 @@ const WalletConnect = () => {
       
       const data = await res.json();
       console.log(data)
-      setBalance(data.balances[0].balance)
+        setBalance(data.balances[0].balance)
 
       setSuccess("Wallet connected successfully!");
     } catch (err) {
@@ -155,7 +148,7 @@ const WalletConnect = () => {
           onClick={handleWalletBalance} 
           disabled={loading}
           className="w-full mt-2 py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
-          {loading ? "Updating..." : "Balance"}
+          {loading ? "Updating..." : "Connect"}
         </button>
       </div>
     </div>
