@@ -11,7 +11,6 @@ interface Message {
 }
 
 interface ClientChatProps {
-  messages: Message[];
   selectedJobId: string | null;
   activeChat: string | null;
   closeChat: () => void;
