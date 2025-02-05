@@ -51,8 +51,8 @@ router.get("/balance", auth, async (req, res) => {
 
       return res.json({ walletAddress: user.walletAddress, balances });
     } catch (stellarError) {
-      if (stellarError.response && stellarError.response.status === 404) {
-        return res.status(401).json({ msg: "Invalid wallet address. The account does not exist on the Stellar network." });
+      if (stellarError.response && stellarError.response.status === 400) {
+        return res.status(402).json({ msg: "Invalid wallet address. The account does not exist on the Stellar network." });
       }
       throw stellarError; // Re-throw other unexpected errors
     }

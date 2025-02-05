@@ -21,7 +21,7 @@ const ProfileList = () => {
         <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-lg border z-50">
           <ul>
             <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={moveToProfile}>Profile</li>
-            <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleConnect}>Connect</li>
+            <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleConnect}>Wallet Connect</li>
           </ul>
         </div>
       )}
