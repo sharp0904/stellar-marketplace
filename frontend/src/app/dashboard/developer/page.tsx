@@ -62,6 +62,12 @@ const DeveloperDashboard = () => {
       if (sender !== user) setTyping(true);
     });
 
+    socket.on("messageRead", ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === messageId ? { ...msg, read: true } : msg))
+      );
+    });
+
     socket.on("userStoppedTyping", () => setTyping(false));
 
     return () => {
@@ -271,7 +277,7 @@ const DeveloperDashboard = () => {
                         socket.emit("typing", { jobId: job._id, sender: user })
                         setTimeout(() => socket.emit("stopTyping", { jobId: job._id, sender: user }), 2000);
                       }}
-                      className="w-full p-2 border rounded mt-2"
+                      className="w-full p-2 border rounded mt-2 text-gray-600"
                       placeholder="Type a message..."
                     />
                     <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
