@@ -1,17 +1,18 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { io } from "socket.io-client";
 
 interface Message {
-  _id: string;
-  sender: string;
-  receiver: string;
+  job: string;
   message: string;
+  read: boolean;
+  receiver: string;
+  sender: string;
   timestamp: string;
+  _id: string;
 }
 
 interface ClientChatProps {
-  messages: Message[];
   selectedJobId: string | null;
   activeChat: string | null;
   closeChat: () => void;
@@ -26,6 +27,7 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
   const { token, user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [typing, setTyping] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (activeChat && selectedJobId) {
@@ -34,12 +36,17 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
     }
 
     socket.on("receiveMessage", (newMsg: Message) => {
-      console.log(newMsg)
       setMessages((prev) => [...prev, newMsg]);
     });
 
     socket.on("userTyping", ({ sender }) => {
       if (sender !== user) setTyping(true);
+    });
+
+    socket.on("messageRead", ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === messageId ? { ...msg, read: true } : msg))
+      );
     });
 
     socket.on("userStoppedTyping", () => setTyping(false));
@@ -50,6 +57,34 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
       socket.off("userStoppedTyping");
     };
   }, [activeChat, selectedJobId]);
+
+  // ✅ Detect if user scrolls to bottom
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; // Small threshold for smoothness
+
+    if (isAtBottom) {
+      const unreadMessages = messages.filter((msg) => !msg.read && msg.receiver === user);
+      unreadMessages.forEach((msg) => {
+        socket.emit("markAsRead", { messageId: msg._id });
+      });
+    }
+  };
+
+  useEffect(() => {
+    const chatBox = chatContainerRef.current;
+    console.log(chatBox)
+    if (chatBox) {
+      chatBox.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (chatBox) {
+        chatBox.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [messages]);
 
   const fetchMessages = async () => {
     if (!token || !user || !activeChat || !selectedJobId) return;
@@ -63,7 +98,6 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
 
       const data = await res.json();
       setMessages(data);
-      console.log(data)
     } catch (err) {
       console.error("❌ Error fetching messages:", err);
     }
@@ -96,12 +130,15 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
         </button>
       </div>
 
-      <div className="mt-2 h-96 overflow-y-auto border p-2 bg-white dark:bg-gray-700 rounded-md">
+      <div ref={chatContainerRef} className="mt-2 h-96 overflow-y-auto border p-2 bg-white dark:bg-gray-700 rounded-md">
         {messages.map((msg) => (
           <p key={msg._id} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
             <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
               {msg.message}
             </span>
+            {msg.sender === user && (
+              <span className={`ml-2 text-xs ${msg.read ? "text-green-500" : "text-gray-500"}`}>✔</span>
+            )}
           </p>
         ))}
       </div>

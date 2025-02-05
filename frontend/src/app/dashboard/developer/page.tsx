@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { io } from "socket.io-client";
 import Profile from "@/app/components/profileList";
@@ -35,6 +35,8 @@ const DeveloperDashboard = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
+  const [receiver, setReceiver] = useState("");
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
@@ -66,6 +68,34 @@ const DeveloperDashboard = () => {
       socket.off("userStoppedTyping");
     };
   }, [activeChat]);
+
+  // ✅ Detect if user scrolls to bottom
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; // Small threshold for smoothness
+
+    if (isAtBottom) {
+      const unreadMessages = messages.filter((msg) => !msg.read && msg.receiver === user);
+      unreadMessages.forEach((msg) => {
+        socket.emit("markAsRead", { messageId: msg._id });
+      });
+    }
+  };
+
+  useEffect(() => {
+    const chatBox = chatContainerRef.current;
+    console.log(chatBox)
+    if (chatBox) {
+      chatBox.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (chatBox) {
+        chatBox.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [messages]);
 
   // ✅ Fetch Jobs Applied By Developer
   const fetchAppliedJobs = async () => {
@@ -143,7 +173,6 @@ const DeveloperDashboard = () => {
       if (!res.ok) throw new Error("Failed to fetch messages");
 
       const data = await res.json();
-      console.log(data)
       setMessages(data || []);
     } catch (err) {
       console.error("❌ Error fetching messages:", err);
@@ -158,7 +187,7 @@ const DeveloperDashboard = () => {
     const messageData = {
       jobId: activeChat,
       sender: user,
-      receiver: activeChat,
+      receiver: receiver,
       message: newMessage,
     };
 
@@ -209,6 +238,7 @@ const DeveloperDashboard = () => {
                   className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                   onClick={() => {
                     setActiveChat(job._id);
+                    setReceiver(job.client)
                     fetchMessages(job._id);
                   }}
                 >
@@ -219,12 +249,15 @@ const DeveloperDashboard = () => {
                 {activeChat === job._id && (
                   <div className="mt-4 p-4 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
                     <h3 className="text-md font-semibold">Chat with Client</h3>
-                    <div className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
+                    <div ref={chatContainerRef} className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
                       {messages.map((msg) => (
                         <div key={msg._id} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
                           <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
                             {msg.message}
                           </span>
+                          {msg.sender === user && (
+                            <span className={`ml-2 text-xs ${msg.read ? "text-green-500" : "text-gray-500"}`}>✔</span>
+                          )}
                         </div>
                       ))}
                     </div>
