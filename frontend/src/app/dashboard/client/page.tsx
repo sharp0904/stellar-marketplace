@@ -40,6 +40,56 @@ const ClientDashboard = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // ✅ Accept an Applicant
+  const acceptApplicant = async (jobId: string, applicantId?: string) => {
+    if (!applicantId) {
+      setError("Error: Applicant ID is missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/accept/${jobId}/${applicantId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to accept applicant.");
+
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error accepting applicant:", err);
+      setError("Error accepting applicant.");
+    }
+  };
+
+  // ✅ Reject an Applicant
+  const rejectApplicant = async (jobId: string, applicantId?: string) => {
+    if (!applicantId) {
+      setError("Error: Applicant ID is missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/reject/${jobId}/${applicantId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to reject applicant.");
+
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error rejecting applicant:", err);
+      setError("Error rejecting applicant.");
+    }
+  };
+
+  // ✅ Open Chat
+  const openChat = (applicantId: string, jobId: string) => {
+    setActiveChat(applicantId);
+    setSelectedJobId(jobId);
+  };
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
@@ -127,9 +177,15 @@ const ClientDashboard = () => {
                 <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                   <span>{applicant.name} ({applicant.email})</span>
                   <div>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Accept</button>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Reject</button>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Message</button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                      Accept
+                    </button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                      Reject
+                    </button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                      Message
+                    </button>
                   </div>
                 </div>
               ))}
@@ -141,9 +197,7 @@ const ClientDashboard = () => {
         {activeChat && (
           <ClientChat
             messages={messages}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            sendMessage={() => {}}
+            selectedJobId={selectedJobId}
             activeChat={activeChat}
             closeChat={() => setActiveChat(null)}
           />
