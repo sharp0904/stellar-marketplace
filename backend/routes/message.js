@@ -71,7 +71,7 @@ router.get("/:jobId", auth, async (req, res) => {
     const messages = await Message.find({ job: jobId })
       .populate("sender", "name email")
       .populate("receiver", "name email")
-      .sort({ createdAt: 1 });
+      .sort({ timestamp: 1 });
 
     res.json(messages);
   } catch (err) {
