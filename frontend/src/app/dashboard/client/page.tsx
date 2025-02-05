@@ -24,7 +24,7 @@ interface Applicant {
 
 interface Message {
   _id: string;
-  sender: { email: string; name: string; _id: string };
+  sender: string;
   receiver: string;
   message: string;
   timestamp: string;
