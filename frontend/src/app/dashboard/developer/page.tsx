@@ -224,8 +224,11 @@ const DeveloperDashboard = () => {
                 <button
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   onClick={() => applyForJob(job._id)}
+                  disabled={appliedJobs.some((appliedJob) => appliedJob._id === job._id)}
                 >
-                  Apply Now
+                  {appliedJobs.some((appliedJob) => appliedJob._id === job._id)
+                    ? "Already Applied"
+                    : "Apply Now"}
                 </button>
               </div>
             ))}
