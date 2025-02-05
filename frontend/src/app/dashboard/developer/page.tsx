@@ -150,8 +150,8 @@ const DeveloperDashboard = () => {
   }, [token]);
 
   return (
-    <div className="flex justify-center">
-      <div className="p-6 text-gray-600">
+    <div className="flex justify-center dark:bg-gray-900 dark:text-gray-100">
+      <div className="p-6 text-gray-600 dark:text-gray-300 w-full">
         <div className="flex justify-between">
           <div>
             <h1 className="text-2xl font-bold">Developer Dashboard</h1>
@@ -168,9 +168,9 @@ const DeveloperDashboard = () => {
         {availableJobs.length > 0 ? (
           <div className="grid gap-4 mt-4">
             {availableJobs.map((job) => (
-              <div key={job._id} className="border p-4 rounded-lg shadow-md">
+              <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <h3 className="text-lg font-semibold">{job.title}</h3>
-                <p className="text-gray-600">{job.description}</p>
+                <p className="text-gray-600 dark:text-gray-400">{job.description}</p>
                 <button
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   onClick={() => applyForJob(job._id)}
@@ -192,9 +192,9 @@ const DeveloperDashboard = () => {
         {appliedJobs.length > 0 ? (
           <div className="grid gap-4 mt-4">
             {appliedJobs.map((job) => (
-              <div key={job._id} className="border p-4 rounded-lg shadow-md">
+              <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <h3 className="text-lg font-semibold">{job.title}</h3>
-                <p className="text-gray-600">{job.description}</p>
+                <p className="text-gray-600 dark:text-gray-400">{job.description}</p>
                 <button
                   className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                   onClick={() => {
@@ -207,9 +207,9 @@ const DeveloperDashboard = () => {
 
                 {/* ✅ Chat UI */}
                 {activeChat === job._id && (
-                  <div className="mt-4 p-4 border rounded-lg bg-gray-100">
+                  <div className="mt-4 p-4 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
                     <h3 className="text-md font-semibold">Chat with Client</h3>
-                    <div className="h-40 overflow-y-auto border p-2 bg-white rounded-md">
+                    <div className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
                       {messages.length > 0 ? (
                         messages.map((msg, index) => (
                           <div key={index} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
@@ -219,7 +219,7 @@ const DeveloperDashboard = () => {
                           </div>
                         ))
                       ) : (
-                        <p className="text-gray-500">No messages yet.</p>
+                        <p className="text-gray-500 dark:text-gray-300">No messages yet.</p>
                       )}
                     </div>
 
@@ -229,7 +229,7 @@ const DeveloperDashboard = () => {
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        className="flex-1 p-2 border rounded"
+                        className="flex-1 p-2 border rounded dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500"
                         placeholder="Type a message..."
                       />
                       <button
