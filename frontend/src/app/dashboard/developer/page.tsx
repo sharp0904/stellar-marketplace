@@ -36,6 +36,8 @@ const DeveloperDashboard = () => {
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
   const [receiver, setReceiver] = useState("");
+  const [showChat, setShowChat] = useState<boolean>(false);
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
@@ -86,7 +88,6 @@ const DeveloperDashboard = () => {
 
   useEffect(() => {
     const chatBox = chatContainerRef.current;
-    console.log(chatBox)
     if (chatBox) {
       chatBox.addEventListener("scroll", handleScroll);
     }
@@ -240,13 +241,14 @@ const DeveloperDashboard = () => {
                     setActiveChat(job._id);
                     setReceiver(job.client)
                     fetchMessages(job._id);
+                    setShowChat(!showChat);
                   }}
                 >
                   Chat with Client
                 </button>
 
                 {/* ✅ Chat UI */}
-                {activeChat === job._id && (
+                {activeChat === job._id && showChat && (
                   <div className="mt-4 p-4 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
                     <h3 className="text-md font-semibold">Chat with Client</h3>
                     <div ref={chatContainerRef} className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
