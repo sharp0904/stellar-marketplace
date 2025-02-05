@@ -21,7 +21,7 @@ interface Applicant {
 
 interface Message {
   _id: string;
-  sender: string;
+  sender: { email: string; name: string; _id: string };
   receiver: string;
   message: string;
   timestamp: string;
@@ -283,14 +283,39 @@ const ClientDashboard = () => {
         {/* ✅ Chat UI */}
         {activeChat && (
           <div className="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 p-4 border shadow-lg rounded-lg">
-            <h3>Chat</h3>
-            <div>{messages.map((msg) => (<p key={msg._id}>{msg.message}</p>))}</div>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Chat</h3>
+              {/* Close Button */}
+              <button
+                onClick={() => setActiveChat(null)}
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+              >
+                X
+              </button>
+            </div>
+
+            <div className="mt-2">
+              {messages.map((msg) => (
+                <p key={msg._id} className={msg.sender._id === user ? "text-right" : "text-left"}>
+                  <span className={`px-2 py-1 rounded-md inline-block ${msg.sender._id === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
+                    {msg.message}
+                  </span>
+                </p>
+              ))}
+            </div>
+
             <input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 mt-2"
+              placeholder="Type a message..."
             />
-            <button onClick={sendMessage} className="bg-blue-500 text-white py-2 px-4 mt-2 rounded-md">Send</button>
+            <button
+              onClick={sendMessage}
+              className="bg-blue-500 text-white py-2 px-4 mt-2 rounded-md"
+            >
+              Send
+            </button>
           </div>
         )}
       </div>
