@@ -4,13 +4,21 @@ import { useAuth } from "@/context/AuthContext";
 
 import Profile from "@/app/components/profileList";
 
+interface Message {
+  _id: string;
+  sender: { email: string; name: string; _id: string };
+  receiver: string;
+  message: string;
+  timestamp: string;
+}
+
 const DeveloperDashboard = () => {
   const { token, user } = useAuth();
   const [appliedJobs, setAppliedJobs] = useState<any[]>([]);
   const [availableJobs, setAvailableJobs] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
-  const [messages, setMessages] = useState<{ sender: string; message: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
@@ -212,8 +220,8 @@ const DeveloperDashboard = () => {
                     <div className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
                       {messages.length > 0 ? (
                         messages.map((msg, index) => (
-                          <div key={index} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
-                            <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
+                          <div key={index} className={`p-1 ${msg.sender._id === user ? "text-right" : "text-left"}`}>
+                            <span className={`px-2 py-1 rounded-md inline-block ${msg.sender._id === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
                               {msg.message}
                             </span>
                           </div>
