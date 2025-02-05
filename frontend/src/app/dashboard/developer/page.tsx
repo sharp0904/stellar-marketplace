@@ -1,30 +1,73 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-
+import { io } from "socket.io-client";
 import Profile from "@/app/components/profileList";
 
-interface Message {
+interface Job {
   _id: string;
-  sender: { email: string; name: string; _id: string };
-  receiver: string;
-  message: string;
-  timestamp: string;
+  title: string;
+  description: string;
+  client: string;
 }
+
+interface Message {
+  job: string;
+  message: string;
+  read: boolean;
+  receiver: string;
+  sender: string;
+  timestamp: string;
+  __v: number;
+  _id: string;
+}
+
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+  transports: ["websocket"],
+});
 
 const DeveloperDashboard = () => {
   const { token, user } = useAuth();
-  const [appliedJobs, setAppliedJobs] = useState<any[]>([]);
-  const [availableJobs, setAvailableJobs] = useState<any[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
+  const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [typing, setTyping] = useState(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
-  // ✅ Fetch Jobs the Developer Has Applied To
+  useEffect(() => {
+    fetchAppliedJobs();
+    fetchAvailableJobs();
+  }, [token]);
+
+  useEffect(() => {
+    if (activeChat) {
+      fetchMessages(activeChat);
+      socket.emit("joinRoom", { jobId: activeChat });
+    }
+
+    socket.on("receiveMessage", (newMsg: Message) => {
+      setMessages((prev) => [...prev, newMsg]);
+    });
+
+    socket.on("userTyping", ({ sender }) => {
+      if (sender !== user) setTyping(true);
+    });
+
+    socket.on("userStoppedTyping", () => setTyping(false));
+
+    return () => {
+      socket.off("receiveMessage");
+      socket.off("userTyping");
+      socket.off("userStoppedTyping");
+    };
+  }, [activeChat]);
+
+  // ✅ Fetch Jobs Applied By Developer
   const fetchAppliedJobs = async () => {
     if (!token) return;
 
@@ -33,11 +76,7 @@ const DeveloperDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        const errorMsg = await res.text();
-        console.error("❌ Error fetching applied jobs:", errorMsg);
-        throw new Error("Failed to fetch applied jobs");
-      }
+      if (!res.ok) throw new Error("Failed to fetch applied jobs");
 
       const data = await res.json();
       setAppliedJobs(data || []);
@@ -56,10 +95,7 @@ const DeveloperDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        console.error("❌ Error fetching jobs:", await res.text());
-        throw new Error("Failed to fetch available jobs");
-      }
+      if (!res.ok) throw new Error("Failed to fetch available jobs");
 
       const data = await res.json();
       setAvailableJobs(data || []);
@@ -72,8 +108,6 @@ const DeveloperDashboard = () => {
   // ✅ Apply for a Job
   const applyForJob = async (jobId: string) => {
     try {
-      console.log(`🔹 Attempting to apply for job ID: ${jobId}`);
-
       const res = await fetch(`${API_URL}/apply/${jobId}`, {
         method: "POST",
         headers: {
@@ -82,14 +116,7 @@ const DeveloperDashboard = () => {
         },
       });
 
-      const responseText = await res.text();
-      console.log("🔹 Server Response:", responseText);
-
-      if (!res.ok) {
-        console.error("❌ Error applying for job:", responseText);
-        setError(JSON.parse(responseText).msg);
-        return;
-      }
+      if (!res.ok) throw new Error("Failed to apply for job");
 
       const job = availableJobs.find((job) => job._id === jobId);
       if (job) {
@@ -104,7 +131,7 @@ const DeveloperDashboard = () => {
     }
   };
 
-  // ✅ Fetch Messages for a Job
+  // ✅ Fetch Messages
   const fetchMessages = async (jobId: string) => {
     if (!token) return;
 
@@ -113,12 +140,10 @@ const DeveloperDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        console.error("❌ Error fetching messages:", await res.text());
-        throw new Error("Failed to fetch messages");
-      }
+      if (!res.ok) throw new Error("Failed to fetch messages");
 
       const data = await res.json();
+      console.log(data)
       setMessages(data || []);
     } catch (err) {
       console.error("❌ Error fetching messages:", err);
@@ -127,44 +152,25 @@ const DeveloperDashboard = () => {
   };
 
   // ✅ Send a Message
-  const sendMessage = async (jobId: string, receiverId: string) => {
-    if (!newMessage.trim()) return;
-    try {
-      const res = await fetch(`${MESSAGE_API_URL}/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ jobId, receiverId, message: newMessage }),
-      });
+  const sendMessage = async () => {
+    if (!token || !user || !activeChat || !newMessage.trim()) return;
 
-      if (!res.ok) {
-        console.error("❌ Error sending message:", await res.text());
-        throw new Error("Failed to send message");
-      }
+    const messageData = {
+      jobId: activeChat,
+      sender: user,
+      receiver: activeChat,
+      message: newMessage,
+    };
 
-      setNewMessage("");
-      fetchMessages(jobId);
-    } catch (err) {
-      console.error("❌ Error sending message:", err);
-      setError("Error sending message");
-    }
+    socket.emit("sendMessage", messageData);
+    setNewMessage("");
   };
-
-  useEffect(() => {
-    fetchAppliedJobs();
-    fetchAvailableJobs();
-  }, [token]);
 
   return (
     <div className="flex justify-center dark:bg-gray-900 dark:text-gray-100">
       <div className="p-6 text-gray-600 dark:text-gray-300 w-full">
         <div className="flex justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Developer Dashboard</h1>
-          </div>
-          {/* Profile Avatar */}
+          <h1 className="text-2xl font-bold">Developer Dashboard</h1>
           <Profile />
         </div>
         <p>Find jobs, submit applications, and chat with clients.</p>
@@ -182,11 +188,8 @@ const DeveloperDashboard = () => {
                 <button
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   onClick={() => applyForJob(job._id)}
-                  disabled={appliedJobs.some((appliedJob) => appliedJob._id === job._id)}
                 >
-                  {appliedJobs.some((appliedJob) => appliedJob._id === job._id)
-                    ? "Already Applied"
-                    : "Apply Now"}
+                  Apply Now
                 </button>
               </div>
             ))}
@@ -195,14 +198,13 @@ const DeveloperDashboard = () => {
           <p>No available jobs.</p>
         )}
 
-        {/* ✅ Applied Jobs with Messaging */}
+        {/* ✅ Applied Jobs with Chat */}
         <h2 className="text-xl font-semibold mt-6">Applied Jobs</h2>
         {appliedJobs.length > 0 ? (
           <div className="grid gap-4 mt-4">
             {appliedJobs.map((job) => (
               <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <h3 className="text-lg font-semibold">{job.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{job.description}</p>
                 <button
                   className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                   onClick={() => {
@@ -218,35 +220,28 @@ const DeveloperDashboard = () => {
                   <div className="mt-4 p-4 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
                     <h3 className="text-md font-semibold">Chat with Client</h3>
                     <div className="h-40 overflow-y-auto border p-2 bg-white dark:bg-gray-600 rounded-md">
-                      {messages.length > 0 ? (
-                        messages.map((msg, index) => (
-                          <div key={index} className={`p-1 ${msg.sender._id === user ? "text-right" : "text-left"}`}>
-                            <span className={`px-2 py-1 rounded-md inline-block ${msg.sender._id === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
-                              {msg.message}
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500 dark:text-gray-300">No messages yet.</p>
-                      )}
+                      {messages.map((msg) => (
+                        <div key={msg._id} className={`p-1 ${msg.sender === user ? "text-right" : "text-left"}`}>
+                          <span className={`px-2 py-1 rounded-md inline-block ${msg.sender === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
+                            {msg.message}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-
-                    {/* ✅ Send Message */}
-                    <div className="mt-2 flex">
-                      <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="flex-1 p-2 border rounded dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500"
-                        placeholder="Type a message..."
-                      />
-                      <button
-                        className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
-                        onClick={() => sendMessage(job._id, job.client)}
-                      >
-                        Send
-                      </button>
-                    </div>
+                    {typing && <p className="text-gray-500">Typing...</p>}
+                    <input
+                      value={newMessage}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value)
+                        socket.emit("typing", { jobId: job._id, sender: user })
+                        setTimeout(() => socket.emit("stopTyping", { jobId: job._id, sender: user }), 2000);
+                      }}
+                      className="w-full p-2 border rounded mt-2"
+                      placeholder="Type a message..."
+                    />
+                    <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+                      Send
+                    </button>
                   </div>
                 )}
               </div>
