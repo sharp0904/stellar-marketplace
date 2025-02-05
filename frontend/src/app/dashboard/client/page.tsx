@@ -34,8 +34,6 @@ const ClientDashboard = () => {
   const { token, user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -91,7 +89,6 @@ const ClientDashboard = () => {
   };
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
-  const MESSAGE_API = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
   const fetchJobs = async () => {
     if (!token || !user) return;
@@ -196,7 +193,6 @@ const ClientDashboard = () => {
         {/* ✅ Chat UI */}
         {activeChat && (
           <ClientChat
-            messages={messages}
             selectedJobId={selectedJobId}
             activeChat={activeChat}
             closeChat={() => setActiveChat(null)}
