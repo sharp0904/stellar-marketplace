@@ -294,7 +294,7 @@ const ClientDashboard = () => {
               </button>
             </div>
 
-            <div className="mt-2">
+            <div className="mt-2 h-96 overflow-y-auto border p-2 bg-white dark:bg-gray-700 rounded-md">
               {messages.map((msg) => (
                 <p key={msg._id} className={msg.sender._id === user ? "text-right" : "text-left"}>
                   <span className={`px-2 py-1 rounded-md inline-block ${msg.sender._id === user ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
