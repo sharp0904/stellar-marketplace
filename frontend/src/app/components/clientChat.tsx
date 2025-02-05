@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 interface Message {
   _id: string;
@@ -10,14 +11,66 @@ interface Message {
 
 interface ClientChatProps {
   messages: Message[];
-  newMessage: string;
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
-  sendMessage: () => void;
+  selectedJobId: string | null;
   activeChat: string | null;
   closeChat: () => void;
 }
 
-const ClientChat: FC<ClientChatProps> = ({ messages, newMessage, setNewMessage, sendMessage, activeChat, closeChat }) => {
+const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat }) => {
+  const [newMessage, setNewMessage] = useState("")
+  const { token, user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const MESSAGE_API = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
+
+  useEffect(() => {
+    activeChat && selectedJobId && fetchMessages(activeChat, selectedJobId);
+  }, [activeChat])
+
+  // ✅ Fetch Messages
+  const fetchMessages = async (receiverId: string, jobId: string) => {
+    if (!token || !user || !receiverId || !jobId) return;
+
+    try {
+      const res = await fetch(`${MESSAGE_API}/${jobId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch messages.");
+
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error("❌ Error fetching messages:", err);
+    }
+  };
+
+  // ✅ Send Message
+  const sendMessage = async () => {
+    if (!token || !user || !activeChat || !newMessage.trim() || !selectedJobId) return;
+
+    try {
+      const res = await fetch(`${MESSAGE_API}/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          jobId: selectedJobId,
+          receiverId: activeChat,
+          message: newMessage,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to send message.");
+
+      setNewMessage("");
+      fetchMessages(activeChat, selectedJobId);
+    } catch (err) {
+      console.error("❌ Error sending message:", err);
+    }
+  };
   return (
     <div className="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 p-4 border shadow-lg rounded-lg">
       <div className="flex justify-between items-center">
