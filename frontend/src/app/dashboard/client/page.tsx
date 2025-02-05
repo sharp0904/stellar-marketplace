@@ -209,10 +209,10 @@ const ClientDashboard = () => {
   };
 
   return (
-    <div className="flex justify-center">
-      <div className="p-6 text-gray-600">
+    <div className="flex justify-center dark:bg-gray-900 dark:text-gray-100">
+      <div className="p-6 text-gray-600 dark:text-gray-300">
         <div className="flex justify-between">
-        <h1 className="text-2xl font-bold">Client Dashboard</h1>
+          <h1 className="text-2xl font-bold">Client Dashboard</h1>
           <Profile />
         </div>
         <p>Post jobs, manage applications, and message developers.</p>
@@ -221,11 +221,42 @@ const ClientDashboard = () => {
         <div className="mt-6">
           <h2 className="text-xl font-semibold">Post a New Job</h2>
           <form onSubmit={handleJobPost} className="space-y-4 mt-4">
-            <input type="text" className="w-full" placeholder="Job Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            <textarea placeholder="Job Description" className="w-full" value={description} onChange={(e) => setDescription(e.target.value)} required />
-            <input type="number" className="w-full" placeholder="Budget (XLM)" value={budget} onChange={(e) => setBudget(e.target.value)} required />
-            <input type="date" className="w-full" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
-            <button type="submit" className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Post Job</button>
+            <input
+              type="text"
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+              placeholder="Job Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+            <textarea
+              placeholder="Job Description"
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <input
+              type="number"
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+              placeholder="Budget (XLM)"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              required
+            />
+            <input
+              type="date"
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+            >
+              Post Job
+            </button>
           </form>
         </div>
 
@@ -233,15 +264,15 @@ const ClientDashboard = () => {
         <div className="mt-6">
           <h2 className="text-xl font-semibold">Your Jobs</h2>
           {jobs.map((job) => (
-            <div key={job._id} className="border p-4 rounded-lg shadow-md">
+            <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
               <h3 className="text-lg font-semibold">{job.title}</h3>
               {job.applicants.map((applicant) => (
                 <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                   <span>{applicant.name} ({applicant.email})</span>
                   <div>
-                    <button onClick={() => acceptApplicant(job._id, applicant._id)}>Accept</button>
-                    <button onClick={() => rejectApplicant(job._id, applicant._id)}>Reject</button>
-                    <button onClick={() => openChat(applicant._id ?? "", job._id)}>Message</button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>Accept</button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>Reject</button>
+                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>Message</button>
                   </div>
                 </div>
               ))}
@@ -251,11 +282,15 @@ const ClientDashboard = () => {
 
         {/* ✅ Chat UI */}
         {activeChat && (
-          <div className="fixed bottom-4 right-4 w-80 bg-white p-4 border shadow-lg rounded-lg">
+          <div className="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 p-4 border shadow-lg rounded-lg">
             <h3>Chat</h3>
             <div>{messages.map((msg) => (<p key={msg._id}>{msg.message}</p>))}</div>
-            <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
-            <button onClick={sendMessage}>Send</button>
+            <input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+            />
+            <button onClick={sendMessage} className="bg-blue-500 text-white py-2 px-4 mt-2 rounded-md">Send</button>
           </div>
         )}
       </div>
