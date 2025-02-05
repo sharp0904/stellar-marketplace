@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faEnvelope, faPen, faLock, faSignOutAlt, faWallet } from "@fortawesome/free-solid-svg-icons";
 
 const ProfilePage = () => {
-  const { user, token, currentRole, logout } = useAuth(); // Example auth context
+  const { user, token, currentRole } = useAuth(); // Example auth context
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -206,15 +206,6 @@ const ProfilePage = () => {
               Update Password
             </button>
           </div>
-
-          {/* Logout Button */}
-          <button
-            onClick={logout}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md mt-4 flex items-center justify-center space-x-2"
-          >
-            <FontAwesomeIcon icon={faSignOutAlt} />
-            <span>Logout</span>
-          </button>
         </div>
       </div>
     </div>
