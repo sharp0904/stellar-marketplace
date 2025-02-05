@@ -75,7 +75,6 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
 
   useEffect(() => {
     const chatBox = chatContainerRef.current;
-    console.log(chatBox)
     if (chatBox) {
       chatBox.addEventListener("scroll", handleScroll);
     }
