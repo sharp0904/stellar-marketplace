@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "../components/header";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -62,85 +63,88 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 text-gray-600">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex justify-center h-full items-center bg-gray-100 text-gray-600">
+        <div className="bg-white p-8 rounded-lg shadow-md w-96">
+          <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
 
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-        <form onSubmit={handleRegister} className="flex flex-col space-y-4">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <form onSubmit={handleRegister} className="flex flex-col space-y-4">
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          {email.length > 0 && !isValidEmail(email) && (
-            <p className="text-red-500 text-sm">Please enter a valid email address.</p>
-          )}
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            {email.length > 0 && !isValidEmail(email) && (
+              <p className="text-red-500 text-sm">Please enter a valid email address.</p>
+            )}
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          {password.length > 0 && password.length < 6 && (
-            <p className="text-red-500 text-sm">Password must be at least 6 characters.</p>
-          )}
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            {password.length > 0 && password.length < 6 && (
+              <p className="text-red-500 text-sm">Password must be at least 6 characters.</p>
+            )}
 
-          <input
-            type="text"
-            placeholder="walletAddress"
-            value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
-            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            <input
+              type="text"
+              placeholder="walletAddress"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700">Select Role</label>
-            <div className="flex items-center space-x-2">
-              <select
-                value={roles[0]}
-                onChange={(e) => setRoles([e.target.value])}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Choose Role</option>
-                <option value="developer">Developer</option>
-                <option value="client">Client</option>
-              </select>
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700">Select Role</label>
+              <div className="flex items-center space-x-2">
+                <select
+                  value={roles[0]}
+                  onChange={(e) => setRoles([e.target.value])}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Choose Role</option>
+                  <option value="developer">Developer</option>
+                  <option value="client">Client</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-            disabled={loading} // ✅ Disable button when loading
-          >
-            {loading ? "Logging in..." : "Register"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+              disabled={loading} // ✅ Disable button when loading
+            >
+              {loading ? "Logging in..." : "Register"}
+            </button>
+          </form>
 
-        <p className="text-sm text-center mt-4">
-          Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Sign In
-          </Link>
-        </p>
+          <p className="text-sm text-center mt-4">
+            Already have an account?{" "}
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
