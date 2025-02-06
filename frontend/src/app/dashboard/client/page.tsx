@@ -13,6 +13,7 @@ interface Job {
   budget: number;
   applicants: Applicant[];
   client: string;
+  status: string;
   escrow: boolean; // Add escrow property
 }
 
@@ -169,7 +170,10 @@ const ClientDashboard = () => {
           <h2 className="text-xl font-semibold">Your Jobs</h2>
           {jobs.map((job) => (
             <div key={job._id} className="border mt-4 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
-              <h3 className="text-lg font-semibold">{job.title}</h3>
+              <div className="flex">
+                <h3 className="text-lg font-semibold">{job.title}</h3>
+                <h5 className="ml-5">{job.status}</h5>
+              </div>
               {job.applicants.map((applicant) => (
                 <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                   <span>{applicant.name} ({applicant.email})</span>

@@ -216,7 +216,7 @@ const DeveloperDashboard = () => {
         {/* ✅ Available Jobs */}
         <h2 className="text-xl font-semibold mt-6">Available Jobs</h2>
         {availableJobs.length > 0 ? (
-          <div className="grid gap-4 mt-4">
+          <div className="grid gap-4 md:grid-cols-2 mt-4">
             {availableJobs.map((job) => (
               <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <h3 className="text-lg font-semibold">{job.title}</h3>
@@ -240,7 +240,7 @@ const DeveloperDashboard = () => {
         {/* ✅ Applied Jobs with Chat */}
         <h2 className="text-xl font-semibold mt-6">Applied Jobs</h2>
         {appliedJobs.length > 0 ? (
-          <div className="grid gap-4 mt-4">
+          <div className="grid gap-4 md:grid-cols-3 mt-4">
             {appliedJobs.map((job) => (
               <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <h3 className="text-lg font-semibold">{job.title}</h3>
