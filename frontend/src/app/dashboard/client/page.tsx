@@ -15,6 +15,7 @@ interface Job {
   client: string;
   status: string;
   escrow: boolean; // Add escrow property
+  selectedDeveloper: string;
 }
 
 interface Applicant {
@@ -174,7 +175,7 @@ const ClientDashboard = () => {
                 <h3 className="text-lg font-semibold">{job.title}</h3>
                 <h5 className="ml-5">{job.status}</h5>
               </div>
-              {job.applicants.map((applicant) => (
+              {job.status === "open" && job.applicants.map((applicant) => (
                 <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                   <span>{applicant.name} ({applicant.email})</span>
                   <div>
@@ -190,6 +191,24 @@ const ClientDashboard = () => {
                   </div>
                 </div>
               ))}
+              {job.status == "in progress" && job.applicants.map((applicant) => (
+                applicant._id === job.selectedDeveloper && (
+                  <div key={applicant._id} className="flex justify-between items-center border-b py-2">
+                  <span>{applicant.name} ({applicant.email})</span>
+                  <div>
+                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                  Complete
+                  </button>
+                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                  Reject
+                  </button>
+                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                  Message
+                  </button>
+                  </div>
+                  </div>
+                ))
+              )}
             </div>
           ))}
         </div>

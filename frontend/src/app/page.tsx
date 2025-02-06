@@ -2,15 +2,30 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Header from './components/header';
+import Image from 'next/image';
 
 const Page = () => {
   const router = useRouter();
 
-  useEffect(() => {
-    router.push("/dashboard");
-  }, [router]);
+  // useEffect(() => {
+  //   router.push("/dashboard");
+  // }, [router]);
 
-  return <div>Redirecting...</div>;
+  return (
+    <div className="h-screen flex flex-col">
+      <Header />
+
+      <div className="relative flex-grow w-full">
+        <Image
+          src="/dashboard.png"
+          alt="dashboard"
+          fill
+          className="object-cover"
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Page;
