@@ -8,10 +8,6 @@ import Image from 'next/image';
 const Page = () => {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   router.push("/dashboard");
-  // }, [router]);
-
   return (
     <div className="h-screen flex flex-col">
       <Header />
