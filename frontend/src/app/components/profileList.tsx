@@ -58,9 +58,14 @@ const ProfileList = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
+      {/* Avatar */}
+      <FontAwesomeIcon 
+        icon={faUser} 
+        className="text-white text-4xl p-2" 
+      />
       {showDropdown && (
         <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-lg border z-50 dark:border-gray-700 transition-all duration-300 ease-in-out">
+          
           <ul>
             <li
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
