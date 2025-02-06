@@ -1,31 +1,66 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useAuth } from "@/context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-// import { faUser, faSignOutAlt } from "@fortawesome/free-regular-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from 'next/navigation';
 
 const ProfileList = () => {
-  const { user, token, logout } = useAuth();
+  const { logout } = useAuth();
   const router = useRouter();
+
   const moveToProfile = () => {
     router.push("/account/profile")
   }
+
   const handleConnect = () => {
     router.push("/account/walletConnect")
   };
 
   const handleLogout = () => {
-    logout
-    router.push("/login")
+    logout()
+    router.push("/")
   }
+
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const timeoutRef = useRef<number | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = window.setTimeout(() => {
+      setIsHovered(true);
+    }, 200); 
+  }
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = window.setTimeout(() => {
+      setIsHovered(false);
+    }, 200); 
+  }
+
+  React.useEffect(() => {
+    if (isHovered) {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  }, [isHovered]);
 
   return (
-    <div className="relative cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
+    <div
+      className="relative cursor-pointer"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-lg border z-50 dark:border-gray-700">
+        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-lg border z-50 dark:border-gray-700 transition-all duration-300 ease-in-out">
           <ul>
             <li
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
