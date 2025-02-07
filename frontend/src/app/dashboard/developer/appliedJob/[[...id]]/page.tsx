@@ -41,6 +41,10 @@ const AppliedJobsList = () => {
   const params = useParams();
   const id = params.id || [];
 
+  useEffect(()=> {
+    setReceiver(id[0])
+  }, [id])
+
   const [activeChat, setActiveChat] = useState<string | null>(id[0] || "");
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -52,6 +56,62 @@ const AppliedJobsList = () => {
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
 
+  useEffect(() => {
+    if (activeChat) {
+      fetchMessages(activeChat);
+      socket.emit("joinRoom", { jobId: activeChat });
+    }
+
+    socket.on("receiveMessage", (newMsg: Message) => {
+      setMessages((prev) => [...prev, newMsg]);
+    });
+
+    socket.on("userTyping", ({ sender }) => {
+      if (sender !== user) setTyping(true);
+    });
+
+    socket.on("userStoppedTyping", () => setTyping(false));
+
+    socket.on("messageRead", ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === messageId ? { ...msg, read: true } : msg))
+      );
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+      socket.off("userTyping");
+      socket.off("userStoppedTyping");
+    };
+  }, [activeChat]);
+
+  // ✅ Detect if user scrolls to bottom
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; // Small threshold for smoothness
+
+    if (isAtBottom) {
+      const unreadMessages = messages.filter((msg) => !msg.read && msg.receiver === user);
+      unreadMessages.forEach((msg) => {
+        socket.emit("markAsRead", { messageId: msg._id });
+      });
+    }
+  };
+
+  useEffect(() => {
+    const chatBox = chatContainerRef.current;
+    console.log(chatBox)
+    if (chatBox) {
+      chatBox.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (chatBox) {
+        chatBox.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [messages]);
 
   useEffect(() => {
     activeChat !== "" && setShowChat(true)
@@ -79,7 +139,9 @@ const AppliedJobsList = () => {
 
   // ✅ Send a Message
   const sendMessage = async () => {
-    if (!token || !user || !activeChat || !newMessage.trim()) return;
+    if (!token || !user || !activeChat || !newMessage.trim() || !receiver) {
+      return;
+    }
 
     const messageData = {
       jobId: activeChat,
@@ -160,9 +222,11 @@ const AppliedJobsList = () => {
                         className="w-full p-2 border rounded mt-2 text-gray-600"
                         placeholder="Type a message..."
                       />
-                      <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
-                        Send
-                      </button>
+                      <div className="flex w-full justify-end">
+                        <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white px-6 py-2 rounded">
+                          Send
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

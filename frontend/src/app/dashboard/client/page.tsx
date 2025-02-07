@@ -55,7 +55,8 @@ const ClientDashboard = () => {
     }
   };
 
-  const handleJobPost = async (data: { title: string; description: string; budget: number; deadline: string; escrow: boolean }) => {
+  const handleJobPost = async (data: { title: string; description: string; budget: number; deadline: string; escrow: boolean; paymentMethod: string; }) => {
+    console.log(data)
     setError("");
     setSuccess("");
 

@@ -8,7 +8,7 @@ const router = express.Router();
 // 📌 Create a New Job (Client Posts a Job)
 router.post("/", auth, async (req, res) => {
   try {
-    const { title, description, budget, deadline } = req.body;
+    const { title, description, budget, deadline, paymentMethod } = req.body;
 
     if (!title || !description || !budget || !deadline) {
       return res.status(400).json({ msg: "All fields are required" });
@@ -22,6 +22,7 @@ router.post("/", auth, async (req, res) => {
       applicants: [],
       deadline,
       status: "open",
+      paymentMethod,
     });
 
     await newJob.save();

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 interface JobPostingFormProps {
-  onSubmit: (data: { title: string; description: string; budget: number; deadline: string; escrow: boolean }) => void;
+  onSubmit: (data: { title: string; description: string; budget: number; deadline: string; escrow: boolean; paymentMethod: string; }) => void;
   error: string;
   setError: any;
   success: string;
@@ -21,6 +21,7 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
   const [balance, setBalance] = useState("");
   const [loading, setLoading] = useState(false);
   const [isConnect, setIsConnect] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const BALLANCE_WALLET_API = process.env.NEXT_PUBLIC_API_URL + "/api/wallet/balance";
 
@@ -53,14 +54,19 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
   }
 
   useEffect(() => {
+    setPaymentMethod("direct");
+    handleWalletBalance()
+  }, [])
+
+  useEffect(() => {
     escrow && token != null && handleWalletBalance()
   }, [escrow])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (escrow) {
+      setPaymentMethod("escrow")
       if (isConnect) {
-
         if (Number(budget) > Number(balance)) {
           setSuccess("")
           setError("Lack of balance")
@@ -71,29 +77,36 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
             budget: Number(budget),
             deadline,
             escrow,
+            paymentMethod
           });
           setTitle("");
           setDescription("");
           setBudget("");
           setDeadline("");
           setEscrow(false);
+          setPaymentMethod("direct");
         }
       } else {
         setError("Please connect your wallet")
       }
     } else {
+      setPaymentMethod("direct")
+
       onSubmit({
         title,
         description,
         budget: Number(budget),
         deadline,
         escrow,
+        paymentMethod
       });
+
       setTitle("");
       setDescription("");
       setBudget("");
       setDeadline("");
       setEscrow(false);
+      setPaymentMethod("direct");
     }
   };
 
@@ -130,7 +143,7 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
             <input
               type="checkbox"
               checked={escrow}
-              onChange={() => setEscrow(!escrow)}
+              onChange={() => { setEscrow(!escrow) }}
               className="w-5 h-5"
             />
           </label>
