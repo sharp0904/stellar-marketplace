@@ -55,7 +55,9 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
 
   useEffect(() => {
     setPaymentMethod("direct");
-    handleWalletBalance()
+    if (token != null) {
+      handleWalletBalance()
+    }
   }, [])
 
   useEffect(() => {
