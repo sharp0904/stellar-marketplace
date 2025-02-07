@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { io } from "socket.io-client";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
@@ -12,30 +12,16 @@ interface Job {
   client: string;
 }
 
-interface Message {
-  job: string;
-  message: string;
-  read: boolean;
-  receiver: string;
-  sender: string;
-  timestamp: string;
-  __v: number;
-  _id: string;
-}
-
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
-  transports: ["websocket"],
-});
-
 const DeveloperDashboard = () => {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
-  const [activeChat, setActiveChat] = useState<string | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
+
+  const router = useRouter();
 
   // ✅ Apply for a Job
   const applyForJob = async (jobId: string) => {
@@ -54,11 +40,18 @@ const DeveloperDashboard = () => {
       if (job) {
         setAppliedJobs((prev) => [...prev, job]);
         setAvailableJobs((prev) => prev.filter((job) => job._id !== jobId));
+        router.push(`/dashboard/developer/appliedJob/${job?._id}`)
       }
+
     } catch (err) {
       console.error("❌ Error applying for job:", err);
       setError("Failed to apply for job");
     }
+  };
+
+  // ✅ Chat for a Job
+  const chatForJob = async (jobId: string) => {
+    router.push(`/dashboard/developer/appliedJob/${jobId}`)
   };
 
   // ✅ Fetch Available Jobs
@@ -124,15 +117,19 @@ const DeveloperDashboard = () => {
                 <div key={job._id} className="border p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                   <h3 className="text-lg font-semibold">{job.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400">{job.description}</p>
-                  <button
-                    className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    onClick={() => applyForJob(job._id)}
-                    disabled={appliedJobs.some((appliedJob) => appliedJob._id === job._id)}
-                  >
-                    {appliedJobs.some((appliedJob) => appliedJob._id === job._id)
-                      ? "Already Applied"
-                      : "Apply Now"}
-                  </button>
+                  {appliedJobs.some((appliedJob) => appliedJob._id === job._id) ?
+                    (
+                      <button
+                        className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                        onClick={() => chatForJob(job._id)}
+                      >Chat with Client </button>
+                    ) : (
+                      <button
+                        className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                        onClick={() => applyForJob(job._id)}
+                      >Apply</button>
+                    )
+                  }
                 </div>
               ))}
             </div>
