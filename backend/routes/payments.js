@@ -40,6 +40,7 @@ router.post("/pay", auth, async (req, res) => {
     const job = await Job.findById(jobId).populate("selectedDeveloper");
     if (!job || job.paymentMethod !== "direct") return res.status(400).json({ msg: "Invalid payment method" });
     if (job.client.toString() !== req.user.id) return res.status(403).json({ msg: "Unauthorized" });
+    if (!job.selectedDeveloper.walletAddress) return res.status(402).json({ msg: "Developer's wallet not connected" })
 
     const clientKeypair = StellarSdk.Keypair.fromSecret(process.env.CLIENT_SECRET);
     const clientAccount = await server.loadAccount(clientKeypair.publicKey());

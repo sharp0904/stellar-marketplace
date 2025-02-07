@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import ClientChat from "@/app/components/clientChat"; // Import ClientChat component
 import JobPostingForm from "@/app/components/jobPostingForm"; // Import JobPostingForm component
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
