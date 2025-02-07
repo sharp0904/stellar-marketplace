@@ -4,6 +4,7 @@ import ClientChat from "@/app/components/clientChat";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import Header from "@/app/components/header";
+import { useRouter } from "next/navigation";
 import Footer from "@/app/components/footer";
 
 interface Applicant {
@@ -26,11 +27,30 @@ interface Job {
 
 const JobListings = () => {
 
+  const router = useRouter();
+  const { user, roles, token } = useAuth();
+
+  const [, setRedirecting] = useState(true);
+  
+  useEffect(() => {
+    if (!user) {
+      router.push("/login"); // Redirect to login if not authenticated
+      return;
+    }
+    // Automatically redirect to the appropriate dashboard
+    if (roles.includes("client")) {
+      router.push("/dashboard/client");
+    } else if (roles.includes("developer")) {
+      router.push("/dashboard/developer");
+    } else {
+      setRedirecting(false);
+    }
+  }, [user, roles, router]);
+
   const JOB_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
   const PAY_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/payments";
 
   const [jobs, setJobs] = useState<Job[]>([]);
-  const { user, token } = useAuth();
   const [error, setError] = useState("");
   const [selectedJobId, setSelectedJobId] = useState("")
   const [activeChat, setActiveChat] = useState<string | null>(null);

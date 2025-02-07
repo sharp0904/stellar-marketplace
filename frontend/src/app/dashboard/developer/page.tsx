@@ -13,6 +13,26 @@ interface Job {
 }
 
 const DeveloperDashboard = () => {
+  const { user, roles } = useAuth();
+  const router = useRouter();
+  const [, setRedirecting] = useState(true);
+  
+  useEffect(() => {
+    if (!user) {
+      router.push("/login"); // Redirect to login if not authenticated
+      return;
+    }
+    // Automatically redirect to the appropriate dashboard
+    if (roles.includes("client")) {
+      router.push("/dashboard/client");
+    } else if (roles.includes("developer")) {
+      router.push("/dashboard/developer");
+    } else {
+      setRedirecting(false);
+    }
+  }, [user, roles, router]);
+
+
   const { token } = useAuth();
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
@@ -20,7 +40,6 @@ const DeveloperDashboard = () => {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
 
-  const router = useRouter();
 
   // ✅ Apply for a Job
   const applyForJob = async (jobId: string) => {
