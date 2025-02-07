@@ -23,8 +23,12 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/dashboard"); // ✅ Redirect user to Dashboard after login
-    } catch (err: any) {
-      setError(err.message || "Invalid email or password. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("Invalid email or password. Please try again.")
+      }
     } finally {
       setLoading(false); // ✅ Re-enable button after request
     }
@@ -78,7 +82,7 @@ export default function LoginPage() {
             </form>
 
             <p className="text-sm text-center mt-4">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/register" className="text-green-500 hover:underline">
                 Sign up
               </Link>

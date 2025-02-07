@@ -46,8 +46,12 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Failed to register.");
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Failed to register.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to register.");
+      }
     } finally {
       setLoading(false);
     }

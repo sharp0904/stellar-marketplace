@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext"; // Example auth context
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faEnvelope, faPen, faLock, faSignOutAlt, faWallet } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faEnvelope, faPen, faLock, faWallet } from "@fortawesome/free-solid-svg-icons";
 
 const ProfilePage = () => {
   const { user, token, currentRole } = useAuth(); // Example auth context
@@ -14,7 +14,7 @@ const ProfilePage = () => {
   const [walletAddress, setWalletAddress] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
 
   const GET_USER_API = process.env.NEXT_PUBLIC_API_URL + "/api/auth/me";
   const UPDATE_USER_API = process.env.NEXT_PUBLIC_API_URL + "/api/auth/update"

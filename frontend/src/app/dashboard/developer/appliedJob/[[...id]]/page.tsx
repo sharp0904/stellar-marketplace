@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { io } from "socket.io-client";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
@@ -35,17 +36,20 @@ const AppliedJobsList = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [showChat, setShowChat] = useState<boolean>(false);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [typing, setTyping] = useState(false);
+  const router = useRouter();
 
   const params = useParams();
   const id = params.id || [];
 
-  useEffect(()=> {
-    setReceiver(id[0])
+  useEffect(() => {
+    if(id.length !== 0) {
+      setReceiver(id[0])
+    }
   }, [id])
 
-  const [activeChat, setActiveChat] = useState<string | null>(id[0] || "");
+  const [activeChat, ] = useState<string | null>(id[0] || "");
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -77,7 +81,6 @@ const AppliedJobsList = () => {
         prev.map((msg) => (msg._id === messageId ? { ...msg, read: true } : msg))
       );
     });
-
     return () => {
       socket.off("receiveMessage");
       socket.off("userTyping");
@@ -102,7 +105,6 @@ const AppliedJobsList = () => {
 
   useEffect(() => {
     const chatBox = chatContainerRef.current;
-    console.log(chatBox)
     if (chatBox) {
       chatBox.addEventListener("scroll", handleScroll);
     }
@@ -114,7 +116,9 @@ const AppliedJobsList = () => {
   }, [messages]);
 
   useEffect(() => {
-    activeChat !== "" && setShowChat(true)
+    if (activeChat !== "") {
+      setShowChat(true)
+    }
     fetchAppliedJobs();
   }, [token, activeChat]);
 
@@ -187,10 +191,11 @@ const AppliedJobsList = () => {
                   <button
                     className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                     onClick={() => {
-                      setActiveChat(job._id);
-                      setReceiver(job.client);
-                      fetchMessages(job._id);
-                      setShowChat(!showChat);
+                      // setActiveChat(job._id);
+                      // setReceiver(job.client);
+                      // fetchMessages(job._id);
+                      // setShowChat(!showChat);
+                      router.push(`/dashboard/developer/appliedJob/${job._id}`)
                     }}
                   >
                     Chat with Client
