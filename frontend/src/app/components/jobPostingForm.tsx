@@ -12,7 +12,7 @@ interface JobPostingFormProps {
 }
 
 const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobPostingFormProps) => {
-  const { user, token, currentRole, logout } = useAuth();
+  const { token } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
@@ -41,7 +41,7 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
       } else if (!res.ok) {
         throw new Error("Internal Server Error");
       }
-      
+
       const data = await res.json();
       setBalance(data.balances[0].balance)
       setIsConnect(true)
@@ -58,10 +58,10 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(escrow) {
-      if(isConnect) {
+    if (escrow) {
+      if (isConnect) {
 
-        if(Number(budget) > Number(balance)) {
+        if (Number(budget) > Number(balance)) {
           setSuccess("")
           setError("Lack of balance")
         } else {
@@ -143,15 +143,17 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
           onChange={(e) => setDeadline(e.target.value)}
           required
         />
-        <button
-          type="submit"
-          className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-        >
-          Post Job
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-green-500 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-6 rounded"
+          >
+            Post Job
+          </button>
+        </div>
       </form>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && escrow && <p className="text-red-500">{error}</p>}
       {success && <p className="text-green-500">{success}</p>}
     </div>
   );

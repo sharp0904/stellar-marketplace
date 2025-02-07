@@ -153,9 +153,11 @@ const ClientChat: FC<ClientChatProps> = ({ activeChat, selectedJobId, closeChat 
         className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 mt-2"
         placeholder="Type a message..."
       />
-      <button onClick={sendMessage} className="bg-blue-500 text-white py-2 px-4 mt-2 rounded-md">
-        Send
-      </button>
+      <div className="w-full flex justify-end">
+        <button onClick={sendMessage} className="bg-blue-500 text-white py-2 px-6 mt-2 rounded-md">
+          Send
+        </button>
+      </div>
     </div>
   );
 };
