@@ -4,6 +4,7 @@ import ClientChat from "@/app/components/clientChat";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import Header from "@/app/components/header";
+import Footer from "@/app/components/footer";
 
 interface Applicant {
   _id?: string;
@@ -112,60 +113,65 @@ const JobListings = () => {
   return (
     <>
       <Header />
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Your Jobs</h2>
-        {jobs.map((job) => (
-          <div key={job._id} className="border mt-4 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
-            <div className="flex">
-              <h3 className="text-lg font-semibold">{job.title}</h3>
-              <h5 className="ml-5">{job.status}</h5>
-            </div>
-            {job.status === "open" && job.applicants.map((applicant) => (
-              <div key={applicant._id} className="flex justify-between items-center border-b py-2">
-                <span>{applicant.name} ({applicant.email})</span>
-                <div>
-                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
-                    Accept
-                  </button>
-                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
-                    Reject
-                  </button>
-                  <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
-                    Message
-                  </button>
+      <div className="mt-6 flex justify-center">
+        <div className="max-w-5xl w-full">
+          <h2 className="text-xl font-semibold">Your Jobs</h2>
+          <div>
+            {jobs.map((job) => (
+              <div key={job._id} className="border w-full mt-4 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
+                <div className="flex">
+                  <h3 className="text-lg font-semibold">{job.title}</h3>
+                  <h5 className="ml-5">{job.status}</h5>
                 </div>
+                {job.status === "open" && job.applicants.map((applicant) => (
+                  <div key={applicant._id} className="flex justify-between items-center border-b py-2">
+                    <span>{applicant.name} ({applicant.email})</span>
+                    <div>
+                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                        Accept
+                      </button>
+                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                        Reject
+                      </button>
+                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                        Message
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {job.status == "in progress" && job.applicants.map((applicant) => (
+                  applicant._id === job.selectedDeveloper && (
+                    <div key={applicant._id} className="flex justify-between items-center border-b py-2">
+                      <span>{applicant.name} ({applicant.email})</span>
+                      <div>
+                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                          Complete
+                        </button>
+                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                          Reject
+                        </button>
+                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                          Message
+                        </button>
+                      </div>
+                    </div>
+                  )
+                ))}
               </div>
             ))}
-            {job.status == "in progress" && job.applicants.map((applicant) => (
-              applicant._id === job.selectedDeveloper && (
-                <div key={applicant._id} className="flex justify-between items-center border-b py-2">
-                  <span>{applicant.name} ({applicant.email})</span>
-                  <div>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
-                      Complete
-                    </button>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
-                      Reject
-                    </button>
-                    <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
-                      Message
-                    </button>
-                  </div>
-                </div>
-              )
-            ))}
           </div>
-        ))}
 
-        {/* ✅ Chat UI */}
-        {activeChat && (
-          <ClientChat
-            selectedJobId={selectedJobId}
-            activeChat={activeChat}
-            closeChat={() => setActiveChat(null)}
-          />
-        )}
+          {/* ✅ Chat UI */}
+          {activeChat && (
+            <ClientChat
+              selectedJobId={selectedJobId}
+              activeChat={activeChat}
+              closeChat={() => setActiveChat(null)}
+            />
+          )}
+        </div>
       </div>
+      <Footer />
     </>
   );
 };
