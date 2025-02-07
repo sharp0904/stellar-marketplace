@@ -36,7 +36,9 @@ router.post("/", auth, async (req, res) => {
 // 📌 Get All Jobs (For Developers to Browse)
 router.get("/", async (req, res) => {
   try {
-    const jobs = await Job.find().populate("applicants", "_id name email"); // Fetch jobs from MongoDB
+    const jobs = await Job.find()
+      .populate("applicants", "_id name email")
+      .sort({createdAt: -1}); // Fetch jobs from MongoDB
     res.json(jobs);
   } catch (err) {
     console.error("❌ Error fetching jobs:", err);
