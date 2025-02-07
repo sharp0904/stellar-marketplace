@@ -17,6 +17,7 @@ const JobSchema = new mongoose.Schema({
   deadline: { type: Date, required: true }, // ✅ Job deadline
   escrowAddress: { type: String, default: "" }, // ✅ Escrow Account Address
   escrowFunded: { type: Boolean, default: false }, // ✅ Whether escrow is funded
+  paymentMethod: { type: String, default: "" }, // ✅ Whether escrow is funded
 
   createdAt: { type: Date, default: Date.now }
 });

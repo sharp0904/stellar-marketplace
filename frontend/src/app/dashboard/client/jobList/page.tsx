@@ -26,7 +26,8 @@ interface Job {
 
 const JobListings = () => {
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+  const JOB_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+  const PAY_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/payments";
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const { user, token } = useAuth();
@@ -42,7 +43,7 @@ const JobListings = () => {
     }
 
     try {
-      const res = await fetch(`${API_URL}/accept/${jobId}/${applicantId}`, {
+      const res = await fetch(`${JOB_API_URL}/accept/${jobId}/${applicantId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -56,6 +57,26 @@ const JobListings = () => {
     }
   };
 
+  const completeApplicant = async (jobId: string) => {
+    try {
+      const res = await fetch(`${PAY_API_URL}/pay`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ jobId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to accept applicant.");
+
+      fetchJobs();
+    } catch (err) {
+      console.error("❌ Error accepting applicant:", err);
+      setError("Error accepting applicant.");
+    }
+  }
+
   // ✅ Reject an Applicant
   const rejectApplicant = async (jobId: string, applicantId?: string) => {
     if (!applicantId) {
@@ -64,7 +85,7 @@ const JobListings = () => {
     }
 
     try {
-      const res = await fetch(`${API_URL}/reject/${jobId}/${applicantId}`, {
+      const res = await fetch(`${JOB_API_URL}/reject/${jobId}/${applicantId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -88,7 +109,7 @@ const JobListings = () => {
     if (!token || !user) return;
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(JOB_API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -113,8 +134,8 @@ const JobListings = () => {
   return (
     <>
       <Header />
-      <div className="mt-6 flex justify-center">
-        <div className="max-w-5xl w-full">
+      <div className="mt-6 flex justify-center min-h-screen">
+        <div className="p-6 max-w-5xl w-full">
           <h2 className="text-xl font-semibold">Your Jobs</h2>
           <div>
             {jobs.map((job) => (
@@ -127,13 +148,13 @@ const JobListings = () => {
                   <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                     <span>{applicant.name} ({applicant.email})</span>
                     <div>
-                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                      <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
                         Accept
                       </button>
-                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                      <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
                         Reject
                       </button>
-                      <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                      <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
                         Message
                       </button>
                     </div>
@@ -144,13 +165,13 @@ const JobListings = () => {
                     <div key={applicant._id} className="flex justify-between items-center border-b py-2">
                       <span>{applicant.name} ({applicant.email})</span>
                       <div>
-                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => acceptApplicant(job._id, applicant._id)}>
+                        <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => completeApplicant(job._id)}>
                           Complete
                         </button>
-                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
+                        <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => rejectApplicant(job._id, applicant._id)}>
                           Reject
                         </button>
-                        <button className="ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
+                        <button className="w-24 my-1 ml-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={() => openChat(applicant._id ?? "", job._id)}>
                           Message
                         </button>
                       </div>
