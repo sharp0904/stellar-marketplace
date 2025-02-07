@@ -6,7 +6,7 @@ const StellarSdk = require("stellar-sdk"); // ✅ Ensure proper import
 require("dotenv").config();
 
 const router = express.Router();
-const TESTNET = process.env.STELLAR_TESTNET === "true";
+const TESTNET = process.env.STELLAR_TESTNET;
 const server = new StellarSdk.Horizon.Server(
   TESTNET ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
 );
