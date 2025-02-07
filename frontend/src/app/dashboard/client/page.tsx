@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import JobPostingForm from "@/app/components/jobPostingForm"; // Import JobPostingForm component
 import Header from "@/app/components/header";
@@ -25,10 +26,28 @@ interface Applicant {
 }
 
 const ClientDashboard = () => {
-  const { token, user } = useAuth();
   const [, setJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const { token, user, roles, switchRole } = useAuth();
+  const router = useRouter();
+  const [redirecting, setRedirecting] = useState(true);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login"); // Redirect to login if not authenticated
+      return;
+    }
+    // Automatically redirect to the appropriate dashboard
+    if (roles.includes("client")) {
+      router.push("/dashboard/client");
+    } else if (roles.includes("developer")) {
+      router.push("/dashboard/developer");
+    } else {
+      setRedirecting(false);
+    }
+  }, [user, roles, router]);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
 

@@ -30,7 +30,25 @@ interface Message {
 
 const AppliedJobsList = () => {
 
-  const { token, user } = useAuth();
+  const { user, roles, token } = useAuth();
+  const router = useRouter();
+  const [, setRedirecting] = useState(true);
+  
+  useEffect(() => {
+    if (!user) {
+      router.push("/login"); // Redirect to login if not authenticated
+      return;
+    }
+    // Automatically redirect to the appropriate dashboard
+    if (roles.includes("client")) {
+      router.push("/dashboard/client");
+    } else if (roles.includes("developer")) {
+      router.push("/dashboard/developer");
+    } else {
+      setRedirecting(false);
+    }
+  }, [user, roles, router]);
+
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [receiver, setReceiver] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,7 +56,6 @@ const AppliedJobsList = () => {
   const [showChat, setShowChat] = useState<boolean>(false);
   const [, setError] = useState("");
   const [typing, setTyping] = useState(false);
-  const router = useRouter();
 
   const params = useParams();
   const id = params.id || [];
