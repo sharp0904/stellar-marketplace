@@ -30,7 +30,7 @@ const Header = () => {
             </div>
             {!token ? (
               <div className="hidden md:flex flex-col md:flex-row md:ml-auto mt-3 md:mt-0" id="navbar-collapse">
-                <a href="/login" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Login</a>
+                <Link href="/login" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Login</Link>
                 {/* <a href="/register" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Signup</a> */}
               </div>
             ) : (
@@ -38,8 +38,8 @@ const Header = () => {
                 <>
                   <div className="hidden md:flex flex-col items-center md:flex-row md:ml-auto mt-3 md:mt-0" id="navbar-collapse">
                     <div className='mr-5'>
-                      <a href="/dashboard/client" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">New Job</a>
-                      <a href="/dashboard/client/jobList" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">My Jobs</a>
+                      <Link href="/dashboard/client" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">New Job</Link>
+                      <Link href="/dashboard/client/jobList" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">My Jobs</Link>
                     </div>
                     <Profile />
                   </div>
