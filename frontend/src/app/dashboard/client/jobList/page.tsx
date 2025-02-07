@@ -34,6 +34,7 @@ const JobListings = () => {
   const [error, setError] = useState("");
   const [selectedJobId, setSelectedJobId] = useState("")
   const [activeChat, setActiveChat] = useState<string | null>(null);
+  const [isComplete, setIsComplete] = useState("");
 
   // ✅ Accept an Applicant
   const acceptApplicant = async (jobId: string, applicantId?: string) => {
@@ -59,6 +60,7 @@ const JobListings = () => {
 
   const completeApplicant = async (jobId: string) => {
     try {
+      setIsComplete(jobId);
       const res = await fetch(`${PAY_API_URL}/pay`, {
         method: "POST",
         headers: { 
@@ -67,7 +69,10 @@ const JobListings = () => {
         },
         body: JSON.stringify({ jobId }),
       });
-
+      if (res.status == 402) {
+        setError("Developer's wallet not connected"); 
+        return;
+      }
       if (!res.ok) throw new Error("Failed to accept applicant.");
 
       fetchJobs();
@@ -178,6 +183,9 @@ const JobListings = () => {
                     </div>
                   )
                 ))}
+              {error && isComplete == job._id && (
+                <span className="text-red-500">{error}</span>
+              )}
               </div>
             ))}
           </div>
