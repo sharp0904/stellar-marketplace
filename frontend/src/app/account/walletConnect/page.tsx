@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const WalletConnect = () => {
-  const { user, token, currentRole, logout } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const { user, token } = useAuth();
+  const [, setName] = useState("");
+  const [, setEmail] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +16,7 @@ const WalletConnect = () => {
   const GET_USER_API = process.env.NEXT_PUBLIC_API_URL + "/api/auth/me";
   const UPDATE_WALLET_API = process.env.NEXT_PUBLIC_API_URL + "/api/wallet/connect";
   const BALLANCE_WALLET_API = process.env.NEXT_PUBLIC_API_URL + "/api/wallet/balance";
-  
+
   const fetchUser = async () => {
     if (!user || !token) return;
 
@@ -48,7 +48,9 @@ const WalletConnect = () => {
 
   useEffect(() => {
     fetchUser();
-    token != null && handleWalletBalance()
+    if (token != null) {
+      handleWalletBalance();
+    }
   }, [user, token]);
 
   const handleWalletUpdate = async () => {
@@ -107,10 +109,10 @@ const WalletConnect = () => {
       } else if (!res.ok) {
         throw new Error("Failed to update wallet address.");
       }
-      
+
       const data = await res.json();
       console.log(data)
-        setBalance(data.balances[0].balance)
+      setBalance(data.balances[0].balance)
 
       setSuccess("Wallet connected successfully!");
     } catch (err) {
@@ -137,15 +139,15 @@ const WalletConnect = () => {
           placeholder="Enter wallet address"
           className="w-full px-4 py-2 text-lg border border-gray-300 rounded-md mb-4 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
-        <button 
-          onClick={handleWalletUpdate} 
+        <button
+          onClick={handleWalletUpdate}
           disabled={loading}
           className="w-full py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
           {loading ? "Updating..." : "Save Wallet Address"}
         </button>
-        
-        <button 
-          onClick={handleWalletBalance} 
+
+        <button
+          onClick={handleWalletBalance}
           disabled={loading}
           className="w-full mt-2 py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
           {loading ? "Updating..." : "Connect"}

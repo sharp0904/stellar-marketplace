@@ -35,13 +35,13 @@ const AppliedJobsList = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [showChat, setShowChat] = useState<boolean>(false);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [typing, setTyping] = useState(false);
 
   const params = useParams();
   const id = params.id || [];
 
-  useEffect(()=> {
+  useEffect(() => {
     setReceiver(id[0])
   }, [id])
 
@@ -114,7 +114,9 @@ const AppliedJobsList = () => {
   }, [messages]);
 
   useEffect(() => {
-    activeChat !== "" && setShowChat(true)
+    if (activeChat !== "") {
+      setShowChat(true)
+    }
     fetchAppliedJobs();
   }, [token, activeChat]);
 

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const { user, roles, currentRole, switchRole } = useAuth();
+  const { user, roles, switchRole } = useAuth();
   const router = useRouter();
   const [redirecting, setRedirecting] = useState(true);
   
@@ -31,7 +31,7 @@ const Dashboard = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">Welcome, {user}!</h1>
-      <p className="mt-4">You don't have a role assigned yet. Please select a role:</p>
+      <p className="mt-4">You don&apos;t have a role assigned yet. Please select a role:</p>
 
       <div className="mt-4 flex gap-4">
         {roles.includes("client") && (

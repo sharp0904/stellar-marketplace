@@ -6,9 +6,9 @@ import { useAuth } from "@/context/AuthContext";
 interface JobPostingFormProps {
   onSubmit: (data: { title: string; description: string; budget: number; deadline: string; escrow: boolean; paymentMethod: string; }) => void;
   error: string;
-  setError: any;
+  setError: React.Dispatch<React.SetStateAction<string>>;
   success: string;
-  setSuccess: any;
+  setSuccess: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobPostingFormProps) => {
@@ -19,7 +19,7 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
   const [deadline, setDeadline] = useState("");
   const [escrow, setEscrow] = useState(false);
   const [balance, setBalance] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [isConnect, setIsConnect] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
 
@@ -59,7 +59,9 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
   }, [])
 
   useEffect(() => {
-    escrow && token != null && handleWalletBalance()
+    if (escrow && token != null) {
+      handleWalletBalance();
+    }
   }, [escrow])
 
   const handleSubmit = async (e: React.FormEvent) => {

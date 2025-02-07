@@ -19,7 +19,6 @@ const DeveloperDashboard = () => {
   const [error, setError] = useState("");
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
-  const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
 
   const router = useRouter();
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import JobPostingForm from "@/app/components/jobPostingForm"; // Import JobPostingForm component
 import Header from "@/app/components/header";
@@ -26,7 +26,7 @@ interface Applicant {
 
 const ClientDashboard = () => {
   const { token, user } = useAuth();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [, setJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 

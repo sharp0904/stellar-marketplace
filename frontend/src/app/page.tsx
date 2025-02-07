@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Header from './components/header';
 import Footer from './components/footer';
 import Image from 'next/image';
 
 const Page = () => {
-  const router = useRouter();
 
   return (
     <div className="flex flex-col">
