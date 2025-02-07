@@ -47,7 +47,10 @@ const Header = () => {
                 <>
                   <div className="hidden md:flex flex-col items-center md:flex-row md:ml-auto mt-3 md:mt-0" id="navbar-collapse">
                     <div className='mr-5'>
-                      <a href="#" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">All Jobs</a>
+                      <a href="/dashboard/developer" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">All Jobs</a>
+                    </div>
+                    <div className='mr-5'>
+                      <a href="/dashboard/developer/appliedJob" className="p-3 lg:px-8 md:mx-4 text-black text-centerx bg-green-500 rounded hover:bg-gray-100 hover:text-black transition-colors duration-300 mt-1 md:mt-0 md:ml-1">My Jobs</a>
                     </div>
                     <Profile />
                   </div>
