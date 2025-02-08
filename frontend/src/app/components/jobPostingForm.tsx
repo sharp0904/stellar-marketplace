@@ -39,6 +39,8 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
 
       if (res.status === 402) {
         return setError("Invalid wallet address.");
+      } else if (res.status === 400) {
+        return setError("No Wallet Address")
       } else if (!res.ok) {
         throw new Error("Internal Server Error");
       }
