@@ -28,6 +28,10 @@ interface Message {
   _id: string;
 }
 
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+  transports: ["websocket"],
+});
+
 const AppliedJobsList = () => {
 
   const { user, roles, token } = useAuth();
@@ -53,18 +57,14 @@ const AppliedJobsList = () => {
   const id = params.id || [];
 
   useEffect(() => {
-    if(id.length !== 0) {
-      setReceiver(id[0])
+    if(id.length === 2) {
+      setReceiver(id[1])
     }
   }, [id])
 
   const [activeChat, ] = useState<string | null>(id[0] || "");
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
-    transports: ["websocket"],
-  });
 
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
@@ -201,10 +201,10 @@ const AppliedJobsList = () => {
                     className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                     onClick={() => {
                       // setActiveChat(job._id);
-                      // setReceiver(job.client);
+                      setReceiver(job.client);
                       // fetchMessages(job._id);
                       // setShowChat(!showChat);
-                      router.push(`/dashboard/developer/appliedJob/${job._id}`)
+                      router.push(`/dashboard/developer/appliedJob/${job._id}/${job.client}`)
                     }}
                   >
                     Chat with Client

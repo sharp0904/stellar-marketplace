@@ -68,8 +68,8 @@ const DeveloperDashboard = () => {
   };
 
   // ✅ Chat for a Job
-  const chatForJob = async (jobId: string) => {
-    router.push(`/dashboard/developer/appliedJob/${jobId}`)
+  const chatForJob = async (jobId: string, jobClient: string) => {
+    router.push(`/dashboard/developer/appliedJob/${jobId}/${jobClient}`)
   };
 
   // ✅ Fetch Available Jobs
@@ -139,7 +139,7 @@ const DeveloperDashboard = () => {
                     (
                       <button
                         className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                        onClick={() => chatForJob(job._id)}
+                        onClick={() => chatForJob(job._id, job.client)}
                       >Chat with Client </button>
                     ) : (
                       <button
