@@ -30,9 +30,9 @@ const ClientDashboard = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const { token, user, roles, switchRole } = useAuth();
+  const { token, user, roles } = useAuth();
   const router = useRouter();
-  const [redirecting, setRedirecting] = useState(true);
+  const [, setRedirecting] = useState(true);
 
   useEffect(() => {
     if (!user) {
