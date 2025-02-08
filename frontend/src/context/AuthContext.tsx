@@ -56,7 +56,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const rawResponse = await res.text();
       console.log("🔹 Raw API Response:", rawResponse);
 
-      if (!res.ok) {
+      if(res.status == 400) {
+        throw new Error(`Login failed: Invalid Credential`);
+      } else if (!res.ok) {
         throw new Error(`Login failed: ${res.status} ${res.statusText}`);
       }
 
@@ -81,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log(`✅ Login successful. UserID: ${data.userId}, Role: ${validRole}`);
     } catch (error) {
-      console.error("❌ Login error:", (error as Error).message);
+      // console.error("❌ Login error:", (error as Error).message);
       throw error;
     }
   };
@@ -105,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // ✅ Switch user role
   const switchRole = (newRole: string) => {
     if (!roles.includes(newRole)) {
-      console.error(`❌ Role switch failed: User does not have role '${newRole}'. Available roles: ${roles}`);
+      // console.error(`❌ Role switch failed: User does not have role '${newRole}'. Available roles: ${roles}`);
       throw new Error("❌ You are not registered for this role");
     }
 
