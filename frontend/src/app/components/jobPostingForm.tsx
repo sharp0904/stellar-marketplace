@@ -121,6 +121,13 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
       <h2 className="text-xl font-semibold">Post a New Job</h2>
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
         <input
+          type="date"
+          className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
+          value={deadline}
+          onChange={(e) => setDeadline(e.target.value)}
+          required
+        />
+        <input
           type="text"
           className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
           placeholder="Job Title"
@@ -155,13 +162,6 @@ const JobPostingForm = ({ onSubmit, error, setError, success, setSuccess }: JobP
           </label>
         </div>
 
-        <input
-          type="date"
-          className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"
-          value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
-          required
-        />
         <div className="flex justify-end">
           <button
             type="submit"

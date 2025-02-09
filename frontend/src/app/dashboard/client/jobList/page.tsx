@@ -31,7 +31,7 @@ const JobListings = () => {
   const { user, roles, token } = useAuth();
 
   const [, setRedirecting] = useState(true);
-  
+
   useEffect(() => {
     if (!user) {
       router.push("/login"); // Redirect to login if not authenticated
@@ -83,14 +83,14 @@ const JobListings = () => {
       setIsComplete(jobId);
       const res = await fetch(`${PAY_API_URL}/pay`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ jobId }),
       });
       if (res.status == 402) {
-        setError("Developer's wallet not connected"); 
+        setError("Developer's wallet not connected");
         return;
       }
       if (!res.ok) throw new Error("Failed to accept applicant.");
@@ -159,8 +159,15 @@ const JobListings = () => {
   return (
     <>
       <Header />
-      <div className="mt-6 flex justify-center min-h-screen">
-        <div className="p-6 max-w-5xl w-full">
+      <div className="relative flex justify-center">
+
+        {/* blur background start */}
+        <div className="absolute inset-0 bg-[url('/dashboard.png')] bg-cover bg-center blur-xl"></div>
+        {/* Overlay for better readability */}
+        <div className="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
+        {/* blur background end */}
+
+        <div className="mt-6 p-6 max-w-5xl w-full z-10">
           <h2 className="text-xl font-semibold">Your Jobs</h2>
           <div>
             {jobs.map((job) => (
@@ -203,9 +210,9 @@ const JobListings = () => {
                     </div>
                   )
                 ))}
-              {error && isComplete == job._id && (
-                <span className="text-red-500">{error}</span>
-              )}
+                {error && isComplete == job._id && (
+                  <span className="text-red-500">{error}</span>
+                )}
               </div>
             ))}
           </div>

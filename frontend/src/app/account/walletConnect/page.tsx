@@ -124,34 +124,43 @@ const WalletConnect = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">WalletConnect</h2>
-      {loading && <p className="text-blue-500 text-lg text-center">Loading...</p>}
-      {error && <p className="text-red-500 text-lg mt-2">{error}</p>}
-      {balance && <p className="text-red-500 text-lg mt-2">{balance}</p>}
-      {success && <p className="text-green-500 text-lg mt-2">{success}</p>}
-      <div className="mt-6">
-        <label className="block text-lg font-medium mb-2 text-gray-900 dark:text-white">Wallet Address:</label>
-        <input
-          type="text"
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-          placeholder="Enter wallet address"
-          className="w-full px-4 py-2 text-lg border border-gray-300 rounded-md mb-4 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-        />
-        <button
-          onClick={handleWalletUpdate}
-          disabled={loading}
-          className="w-full py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
-          {loading ? "Updating..." : "Save Wallet Address"}
-        </button>
+    <div className="relative flex items-center justify-center min-h-screen">
 
-        <button
-          onClick={handleWalletBalance}
-          disabled={loading}
-          className="w-full mt-2 py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
-          {loading ? "Updating..." : "Connect"}
-        </button>
+      {/* blur background start */}
+      <div className="absolute inset-0 bg-[url('/dashboard.png')] bg-cover bg-center blur-xl"></div>
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
+      {/* blur background end */}
+
+      <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-10">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">WalletConnect</h2>
+        {loading && <p className="text-blue-500 text-lg text-center">Loading...</p>}
+        {error && <p className="text-red-500 text-lg mt-2">{error}</p>}
+        {balance && <p className="text-red-500 text-lg mt-2">{balance}</p>}
+        {success && <p className="text-green-500 text-lg mt-2">{success}</p>}
+        <div className="mt-6">
+          <label className="block text-lg font-medium mb-2 text-gray-900 dark:text-white">Wallet Address:</label>
+          <input
+            type="text"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+            placeholder="Enter wallet address"
+            className="w-full px-4 py-2 text-lg border border-gray-300 rounded-md mb-4 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+          />
+          <button
+            onClick={handleWalletUpdate}
+            disabled={loading}
+            className="w-full py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
+            {loading ? "Updating..." : "Save Wallet Address"}
+          </button>
+
+          <button
+            onClick={handleWalletBalance}
+            disabled={loading}
+            className="w-full mt-2 py-2 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-800">
+            {loading ? "Updating..." : "Connect"}
+          </button>
+        </div>
       </div>
     </div>
   );

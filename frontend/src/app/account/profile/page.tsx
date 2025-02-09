@@ -126,8 +126,15 @@ const ProfilePage = () => {
       <p className="text-lg">Loading...</p>
     </div>
   ) : (
-    <div className="min-h-screen flex justify-center bg-gray-900 text-white">
-      <div className="max-w-3xl w-full mx-auto p-6 bg-gray-800 shadow-lg rounded-lg mt-10">
+    <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white relative">
+
+      {/* blur background start */}
+      <div className="absolute inset-0 bg-[url('/dashboard.png')] bg-cover bg-center blur-xl"></div>
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
+      {/* blur background end */}
+
+      <div className="max-w-3xl w-full mx-auto p-6 bg-gray-800 shadow-lg rounded-lg my-10 z-10">
         {/* Profile Header */}
         <div className="flex items-center space-x-4 border-b border-gray-700 pb-4">
           <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center">

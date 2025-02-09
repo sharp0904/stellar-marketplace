@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const rawResponse = await res.text();
       console.log("🔹 Raw API Response:", rawResponse);
 
-      if(res.status == 400) {
+      if (res.status == 400) {
         throw new Error(`Login failed: Invalid Credential`);
       } else if (!res.ok) {
         throw new Error(`Login failed: ${res.status} ${res.statusText}`);

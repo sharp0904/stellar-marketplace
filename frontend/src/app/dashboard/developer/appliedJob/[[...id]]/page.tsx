@@ -28,27 +28,11 @@ interface Message {
   _id: string;
 }
 
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+  transports: ["websocket"],
+});
+
 const AppliedJobsList = () => {
-
-  const { user, roles, token } = useAuth();
-  const router = useRouter();
-  const [, setRedirecting] = useState(true);
-  
-  useEffect(() => {
-    if (!user) {
-      router.push("/login"); // Redirect to login if not authenticated
-      return;
-    }
-    // Automatically redirect to the appropriate dashboard
-    if (roles.includes("client")) {
-      router.push("/dashboard/client/jobList");
-    } else if (roles.includes("developer")) {
-      router.push("/dashboard/developer/appliedJob");
-    } else {
-      setRedirecting(false);
-    }
-  }, [user, roles, router]);
-
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [receiver, setReceiver] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -56,23 +40,36 @@ const AppliedJobsList = () => {
   const [showChat, setShowChat] = useState<boolean>(false);
   const [, setError] = useState("");
   const [typing, setTyping] = useState(false);
-
   const params = useParams();
   const id = params.id || [];
+  const [activeChat, setActiveChat] = useState<string | null>(id[0] || "");
+  
+  const { user, roles, token } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    if(id.length !== 0) {
-      setReceiver(id[0])
+    if (user === undefined) return; // Prevent redirect until authentication is confirmed
+  
+    if (!user) {
+      router.replace("/login"); // Use `replace` to prevent back navigation issues
+      return;
+    }
+  
+    // Only redirect if `activeChat` and `receiver` are defined
+    if (activeChat && receiver) {
+      router.replace(`/dashboard/developer/appliedJob/${activeChat}/${receiver}`);
+    } else {
+      router.replace("/dashboard/developer/appliedJob");
+    }
+  }, [user, roles, router, activeChat, receiver]);
+
+  useEffect(() => {
+    if (id.length === 2) {
+      setReceiver(id[1])
     }
   }, [id])
 
-  const [activeChat, ] = useState<string | null>(id[0] || "");
-
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
-    transports: ["websocket"],
-  });
 
   const MESSAGE_API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/messages";
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
@@ -197,8 +194,15 @@ const AppliedJobsList = () => {
   return (
     <div>
       <Header />
-      <div className="flex justify-center dark:bg-gray-900 dark:text-gray-100">
-        <div className="p-6 text-gray-600 dark:text-gray-300 w-full max-w-5xl">
+      <div className="relative flex justify-center dark:bg-gray-900 dark:text-gray-100">
+
+        {/* blur background start */}
+        <div className="absolute inset-0 bg-[url('/dashboard.png')] bg-cover bg-center blur-xl"></div>
+        {/* Overlay for better readability */}
+        <div className="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
+        {/* blur background end */}
+
+        <div className="p-6 text-gray-600 dark:text-gray-300 w-full max-w-5xl z-10">
           <h2 className="text-xl font-semibold mt-6">Applied Jobs</h2>
           {appliedJobs.length > 0 ? (
             <div className="grid gap-4 mt-4">
@@ -208,11 +212,11 @@ const AppliedJobsList = () => {
                   <button
                     className="mt-2 bg-gray-500 text-white px-3 py-1 rounded"
                     onClick={() => {
-                      // setActiveChat(job._id);
-                      // setReceiver(job.client);
+                      setActiveChat(job._id);
+                      setReceiver(job.client);
                       // fetchMessages(job._id);
                       // setShowChat(!showChat);
-                      router.push(`/dashboard/developer/appliedJob/${job._id}`)
+                      router.push(`/dashboard/developer/appliedJob/${job._id}/${job.client}`)
                     }}
                   >
                     Chat with Client
