@@ -33,7 +33,7 @@ router.post("/send", auth, async (req, res) => {
     }
 
     const newMessage = new Message({
-      job: jobId,
+      job: jobId, 
       sender: req.user.id,
       receiver: receiverId,
       message,
